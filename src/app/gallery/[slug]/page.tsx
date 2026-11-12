@@ -5,12 +5,13 @@ import { notFound } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CopyLinkButton from "@/components/CopyLinkButton";
+import { draftMode } from "next/headers";
 import {
   getAllPhotographs,
   getPhotographBySlug,
   getAdjacentPhotographs,
   getPhotographsByCollection,
-  SITE_CONFIG,
+  getSiteConfig,
 } from "@/lib/data";
 import {
   ArrowLeft,
@@ -27,8 +28,11 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Enables on-demand server rendering for newly published plates without rebuild
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  const photographs = getAllPhotographs();
+  const photographs = await getAllPhotographs();
   return photographs.map((p) => ({
     slug: p.slug,
   }));
@@ -36,7 +40,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const photo = getPhotographBySlug(slug);
+  let isDraft = false;
+  try {
+    isDraft = (await draftMode()).isEnabled;
+  } catch {
+    isDraft = false;
+  }
+  const photo = await getPhotographBySlug(slug, { isDraft });
 
   if (!photo) {
     return {
@@ -44,11 +54,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  // If in draft mode, ensure search engines never index draft content
+  if (isDraft) {
+    return {
+      title: `[Draft Preview] ${photo.title} — Harikrishnan Nandanan`,
+      robots: { index: false, follow: false },
+    };
+  }
+
   const title = `${photo.plateNumber ? `${photo.plateNumber} · ` : ""}${photo.title} — Harikrishnan Nandanan`;
   const description =
     photo.description ||
     photo.caption ||
-    `Photographic study by Harikrishnan Nandanan captured with the Canon EOS R6 Mark III.`;
+    `Photographic study by Harikrishnan Nandanan.`;
 
   return {
     title,
@@ -69,23 +87,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PhotographDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const photo = getPhotographBySlug(slug);
+  let isDraft = false;
+  try {
+    isDraft = (await draftMode()).isEnabled;
+  } catch {
+    isDraft = false;
+  }
+  const [photo, siteConfig] = await Promise.all([
+    getPhotographBySlug(slug, { isDraft }),
+    getSiteConfig(),
+  ]);
 
   if (!photo) {
     notFound();
   }
 
-  const { prev, next } = getAdjacentPhotographs(slug);
+  const { prev, next } = await getAdjacentPhotographs(slug);
 
   const relatedPhotos = photo.collectionSlug
-    ? getPhotographsByCollection(photo.collectionSlug)
+    ? (await getPhotographsByCollection(photo.collectionSlug))
         .filter((p) => p.slug !== photo.slug)
         .slice(0, 3)
     : [];
 
   return (
     <div className="min-h-screen bg-[#08080a] text-[#f4f2ec] flex flex-col relative selection:bg-[#f4f2ec] selection:text-[#08080a]">
-      <Navigation />
+      <Navigation siteConfig={siteConfig} />
 
       <main className="flex-grow pt-24 md:pt-32 pb-24 px-5 sm:px-8 md:px-12 max-w-7xl mx-auto w-full space-y-12 md:space-y-16">
         {/* Top Control Bar & Breadcrumb */}
@@ -98,25 +125,24 @@ export default async function PhotographDetailPage({ params }: PageProps) {
               <ArrowLeft size={13} className="text-[#d4a373]" />
               <span>Gallery</span>
             </Link>
-            <span className="text-white/20">/</span>
-            {photo.collectionSlug && (
-              <>
-                <Link
-                  href={`/collections/${photo.collectionSlug}`}
-                  className="text-[#a1a1aa] hover:text-[#f4f2ec] transition-colors hidden md:inline"
-                >
-                  {photo.series || "Journey"}
-                </Link>
-                <span className="text-white/20 hidden md:inline">/</span>
-              </>
-            )}
-            <span className="text-[#d4a373] tracking-widest uppercase">
-              {photo.plateNumber || "Plate"}
+            <span className="text-[#73737c]">/</span>
+            <span className="text-[#d4a373] uppercase tracking-wider">
+              {photo.plateNumber || "PLATE"}
+            </span>
+            <span className="text-[#73737c]">/</span>
+            <span className="text-[#c8c5bc] truncate max-w-[200px] sm:max-w-xs">
+              {photo.title}
             </span>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 self-end sm:self-auto">
             <CopyLinkButton title={photo.title} />
+            <Link
+              href="/gallery"
+              className="px-3.5 py-1.5 bg-white/[0.03] hover:bg-white/[0.08] border border-white/15 text-xs font-mono tracking-widest text-[#f4f2ec] uppercase transition-colors"
+            >
+              Close Dossier [ESC]
+            </Link>
           </div>
         </div>
 
@@ -142,6 +168,8 @@ export default async function PhotographDetailPage({ params }: PageProps) {
                 fill
                 priority
                 sizes="(max-width: 1280px) 100vw, 1280px"
+                placeholder={photo.lqip ? "blur" : "empty"}
+                blurDataURL={photo.lqip}
                 className="object-contain"
               />
 
@@ -160,7 +188,7 @@ export default async function PhotographDetailPage({ params }: PageProps) {
           <div className="lg:col-span-7 space-y-6">
             <div className="space-y-2">
               <div className="flex items-center space-x-2 font-mono text-xs text-[#d4a373] tracking-[0.25em] uppercase">
-                <span className="font-semibold">{photo.plateNumber}</span>
+                <span className="font-semibold">{photo.plateNumber || "PLATE"}</span>
                 {photo.series && (
                   <>
                     <span className="text-white/20">·</span>
@@ -279,15 +307,17 @@ export default async function PhotographDetailPage({ params }: PageProps) {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
-                  <span className="text-[#73737c] flex items-center gap-1.5 uppercase">
-                    <Calendar size={12} className="text-[#d4a373]" />
-                    Archive Date
-                  </span>
-                  <span className="text-[#f4f2ec]">
-                    {photo.captureDate || photo.year || "Sample Archive"}
-                  </span>
-                </div>
+                {(photo.captureDate || photo.year) && (
+                  <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
+                    <span className="text-[#73737c] flex items-center gap-1.5 uppercase">
+                      <Calendar size={12} className="text-[#d4a373]" />
+                      Date Captured
+                    </span>
+                    <span className="text-[#f4f2ec]">
+                      {photo.captureDate || photo.year}
+                    </span>
+                  </div>
+                )}
 
                 {photo.aspectRatio && (
                   <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
@@ -326,7 +356,7 @@ export default async function PhotographDetailPage({ params }: PageProps) {
                 />
                 <div className="overflow-hidden">
                   <span className="block text-[10px] text-[#73737c] uppercase tracking-widest">
-                    Previous Plate · {prev.plateNumber}
+                    Previous Plate {prev.plateNumber ? `· ${prev.plateNumber}` : ""}
                   </span>
                   <span className="block text-[#f4f2ec] font-serif text-base sm:text-lg group-hover:text-white transition-colors truncate">
                     {prev.title}
@@ -344,7 +374,7 @@ export default async function PhotographDetailPage({ params }: PageProps) {
               >
                 <div className="overflow-hidden">
                   <span className="block text-[10px] text-[#73737c] uppercase tracking-widest">
-                    Next Plate · {next.plateNumber}
+                    Next Plate {next.plateNumber ? `· ${next.plateNumber}` : ""}
                   </span>
                   <span className="block text-[#f4f2ec] font-serif text-base sm:text-lg group-hover:text-white transition-colors truncate">
                     {next.title}
@@ -394,11 +424,15 @@ export default async function PhotographDetailPage({ params }: PageProps) {
                       alt={sibling.alt}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
+                      placeholder={sibling.lqip ? "blur" : "empty"}
+                      blurDataURL={sibling.lqip}
                       className="object-cover filter brightness-[0.9] group-hover:scale-105 group-hover:brightness-100 transition-all duration-700"
                     />
-                    <span className="absolute top-2 left-2 font-mono text-[9px] tracking-widest uppercase bg-[#08080a]/80 backdrop-blur-md px-1.5 py-0.5 border border-white/10 text-[#d4a373]">
-                      {sibling.plateNumber}
-                    </span>
+                    {sibling.plateNumber && (
+                      <span className="absolute top-2 left-2 font-mono text-[9px] tracking-widest uppercase bg-[#08080a]/80 backdrop-blur-md px-1.5 py-0.5 border border-white/10 text-[#d4a373]">
+                        {sibling.plateNumber}
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-0.5">
                     <h4 className="font-serif text-base text-[#f4f2ec] group-hover:text-white transition-colors truncate">
@@ -415,7 +449,7 @@ export default async function PhotographDetailPage({ params }: PageProps) {
         )}
       </main>
 
-      <Footer />
+      <Footer siteConfig={siteConfig} />
     </div>
   );
 }

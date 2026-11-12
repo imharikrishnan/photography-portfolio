@@ -57,6 +57,7 @@ export interface Photograph {
   featured?: boolean;
   isPlaceholder?: boolean;
   sampleNote?: string;
+  lqip?: string;
 }
 
 export interface Collection {
@@ -68,6 +69,7 @@ export interface Collection {
   description: string;
   coverImage: string;
   yearRange?: string;
+  lqip?: string;
 }
 
 export interface SiteConfig {
@@ -88,6 +90,8 @@ export interface SiteConfig {
     placeholder: string;
   }[];
   placeholderDisclaimer: string;
+  portraitUrl?: string;
+  portraitLqip?: string;
 }
 
 export const SITE_CONFIG: SiteConfig = {
@@ -582,28 +586,155 @@ export const RAW_PHOTOGRAPHS: Photograph[] = [
 
 // --- Data Access Layer ---
 // These functions provide clean, decoupled access to photographs and collections.
-// In Phase 4, these will be swapped to GROQ queries with Sanity CMS.
+// In Phase 4, these query Sanity CMS via GROQ with Next.js tag-based caching,
+// and gracefully fallback to mock data only when explicitly enabled or unconfigured.
 
-export function getAllPhotographs(): Photograph[] {
-  return [...RAW_PHOTOGRAPHS].sort((a, b) => a.displayOrder - b.displayOrder);
+import { sanityFetch } from "@/sanity/lib/client";
+import {
+  ALL_PHOTOGRAPHS_QUERY,
+  FEATURED_PHOTOGRAPHS_QUERY,
+  HERO_PHOTOGRAPH_QUERY,
+  PHOTOGRAPH_BY_SLUG_QUERY,
+  PHOTOGRAPHS_BY_COLLECTION_QUERY,
+  PHOTOGRAPHS_BY_CATEGORY_QUERY,
+  ALL_COLLECTIONS_QUERY,
+  COLLECTION_BY_SLUG_QUERY,
+  SITE_SETTINGS_QUERY,
+  DRAFT_PHOTOGRAPH_BY_SLUG_QUERY,
+  DRAFT_ALL_PHOTOGRAPHS_QUERY,
+  DRAFT_COLLECTION_BY_SLUG_QUERY,
+  DRAFT_ALL_COLLECTIONS_QUERY,
+} from "@/sanity/lib/queries";
+import {
+  SanityPhotographDoc,
+  SanityCollectionDoc,
+  SanitySiteSettingsDoc,
+} from "@/sanity/lib/types";
+import {
+  mapSanityPhotograph,
+  mapSanityCollection,
+  mapSanitySiteSettings,
+} from "@/sanity/lib/mappers";
+import { projectId, useMockData } from "@/sanity/env";
+
+export function shouldServeMockData(): boolean {
+  if (useMockData) return true;
+  if (
+    !projectId ||
+    projectId.trim() === "" ||
+    projectId === "placeholder-project-id"
+  ) {
+    return true;
+  }
+  return false;
 }
 
-export function getFeaturedPhotographs(): Photograph[] {
-  return getAllPhotographs().filter((p) => p.featured);
+export interface FetchOptions {
+  isDraft?: boolean;
 }
 
-export function getPhotographBySlug(slug: string): Photograph | undefined {
-  return RAW_PHOTOGRAPHS.find((p) => p.slug === slug);
+export async function getAllPhotographs(
+  options?: FetchOptions
+): Promise<Photograph[]> {
+  if (shouldServeMockData()) {
+    return [...RAW_PHOTOGRAPHS].sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  try {
+    const isDraft = options?.isDraft ?? false;
+    const query = isDraft ? DRAFT_ALL_PHOTOGRAPHS_QUERY : ALL_PHOTOGRAPHS_QUERY;
+    const docs = await sanityFetch<SanityPhotographDoc[]>({
+      query,
+      tags: isDraft ? [] : ["photographs"],
+      isDraftMode: isDraft,
+    });
+    return docs.map(mapSanityPhotograph);
+  } catch (error) {
+    console.error(
+      "[Sanity Data Layer] Error fetching photographs:",
+      error instanceof Error ? error.message : "API failure"
+    );
+    return [];
+  }
 }
 
-export function getAdjacentPhotographs(slug: string): {
+export async function getFeaturedPhotographs(): Promise<Photograph[]> {
+  if (shouldServeMockData()) {
+    return RAW_PHOTOGRAPHS.filter((p) => p.featured && p.id !== "hero-plate");
+  }
+
+  try {
+    const docs = await sanityFetch<SanityPhotographDoc[]>({
+      query: FEATURED_PHOTOGRAPHS_QUERY,
+      tags: ["photographs"],
+    });
+    return docs.map(mapSanityPhotograph);
+  } catch (error) {
+    console.error("Sanity error fetching featured photographs:", error);
+    return [];
+  }
+}
+
+export async function getHeroPhotograph(): Promise<Photograph | null> {
+  if (shouldServeMockData()) {
+    return (
+      RAW_PHOTOGRAPHS.find((p) => p.slug === "morning-mist-on-alpine-waters") ||
+      RAW_PHOTOGRAPHS[0] ||
+      null
+    );
+  }
+
+  try {
+    const heroDoc = await sanityFetch<SanityPhotographDoc | null>({
+      query: HERO_PHOTOGRAPH_QUERY,
+      tags: ["photographs"],
+    });
+    if (heroDoc) {
+      return mapSanityPhotograph(heroDoc);
+    }
+    const all = await getAllPhotographs();
+    return all[0] || null;
+  } catch (error) {
+    console.error("Sanity error fetching hero photograph:", error);
+    return null;
+  }
+}
+
+export async function getPhotographBySlug(
+  slug: string,
+  options?: FetchOptions
+): Promise<Photograph | null> {
+  if (shouldServeMockData()) {
+    return RAW_PHOTOGRAPHS.find((p) => p.slug === slug) || null;
+  }
+
+  try {
+    const isDraft = options?.isDraft ?? false;
+    const query = isDraft ? DRAFT_PHOTOGRAPH_BY_SLUG_QUERY : PHOTOGRAPH_BY_SLUG_QUERY;
+    const doc = await sanityFetch<SanityPhotographDoc | null>({
+      query,
+      params: { slug },
+      tags: isDraft ? [] : ["photographs", `photograph:${slug}`],
+      isDraftMode: isDraft,
+    });
+    return doc ? mapSanityPhotograph(doc) : null;
+  } catch (error) {
+    console.error(
+      `[Sanity Data Layer] Error fetching photograph by slug ${slug}:`,
+      error instanceof Error ? error.message : "API failure"
+    );
+    return null;
+  }
+}
+
+export async function getAdjacentPhotographs(slug: string): Promise<{
   prev: Photograph | null;
   next: Photograph | null;
-} {
-  const all = getAllPhotographs();
+}> {
+  const all = await getAllPhotographs();
   const currentIndex = all.findIndex((p) => p.slug === slug);
 
-  if (currentIndex === -1) {
+  if (currentIndex === -1 || all.length <= 1) {
     return { prev: null, next: null };
   }
 
@@ -613,28 +744,123 @@ export function getAdjacentPhotographs(slug: string): {
   return { prev, next };
 }
 
-export function getPhotographsByCollection(collectionSlug: string): Photograph[] {
-  return getAllPhotographs().filter((p) => p.collectionSlug === collectionSlug);
+export async function getPhotographsByCollection(
+  collectionSlug: string
+): Promise<Photograph[]> {
+  if (shouldServeMockData()) {
+    return RAW_PHOTOGRAPHS.filter((p) => p.collectionSlug === collectionSlug);
+  }
+
+  try {
+    const docs = await sanityFetch<SanityPhotographDoc[]>({
+      query: PHOTOGRAPHS_BY_COLLECTION_QUERY,
+      params: { collectionSlug },
+      tags: ["photographs", `collection:${collectionSlug}`],
+    });
+    return docs.map(mapSanityPhotograph);
+  } catch (error) {
+    console.error(
+      `Sanity error fetching photographs by collection ${collectionSlug}:`,
+      error
+    );
+    return [];
+  }
 }
 
-export function getPhotographsByCategory(category: PhotographCategory): Photograph[] {
-  return getAllPhotographs().filter((p) => p.category === category);
+export async function getPhotographsByCategory(
+  category: PhotographCategory
+): Promise<Photograph[]> {
+  if (shouldServeMockData()) {
+    return RAW_PHOTOGRAPHS.filter((p) => p.category === category);
+  }
+
+  try {
+    const docs = await sanityFetch<SanityPhotographDoc[]>({
+      query: PHOTOGRAPHS_BY_CATEGORY_QUERY,
+      params: { category },
+      tags: ["photographs"],
+    });
+    return docs.map(mapSanityPhotograph);
+  } catch (error) {
+    console.error(
+      `Sanity error fetching photographs by category ${category}:`,
+      error
+    );
+    return [];
+  }
 }
 
-export function getAllCollections(): (Collection & { count: number })[] {
-  return RAW_COLLECTIONS.map((c) => ({
-    ...c,
-    count: RAW_PHOTOGRAPHS.filter((p) => p.collectionSlug === c.slug).length,
-  }));
+export async function getAllCollections(
+  options?: FetchOptions
+): Promise<(Collection & { count: number })[]> {
+  if (shouldServeMockData()) {
+    return RAW_COLLECTIONS.map((c) => ({
+      ...c,
+      count: RAW_PHOTOGRAPHS.filter((p) => p.collectionSlug === c.slug).length,
+    }));
+  }
+
+  try {
+    const isDraft = options?.isDraft ?? false;
+    const query = isDraft ? DRAFT_ALL_COLLECTIONS_QUERY : ALL_COLLECTIONS_QUERY;
+    const docs = await sanityFetch<SanityCollectionDoc[]>({
+      query,
+      tags: isDraft ? [] : ["collections"],
+      isDraftMode: isDraft,
+    });
+    return docs.map(mapSanityCollection);
+  } catch (error) {
+    console.error(
+      "[Sanity Data Layer] Error fetching collections:",
+      error instanceof Error ? error.message : "API failure"
+    );
+    return [];
+  }
 }
 
-export function getCollectionBySlug(slug: string): (Collection & { count: number }) | undefined {
-  const collection = RAW_COLLECTIONS.find((c) => c.slug === slug);
-  if (!collection) return undefined;
-  const count = RAW_PHOTOGRAPHS.filter((p) => p.collectionSlug === slug).length;
-  return { ...collection, count };
+export async function getCollectionBySlug(
+  slug: string,
+  options?: FetchOptions
+): Promise<(Collection & { count: number }) | null> {
+  if (shouldServeMockData()) {
+    const collection = RAW_COLLECTIONS.find((c) => c.slug === slug);
+    if (!collection) return null;
+    const count = RAW_PHOTOGRAPHS.filter((p) => p.collectionSlug === slug).length;
+    return { ...collection, count };
+  }
+
+  try {
+    const isDraft = options?.isDraft ?? false;
+    const query = isDraft ? DRAFT_COLLECTION_BY_SLUG_QUERY : COLLECTION_BY_SLUG_QUERY;
+    const doc = await sanityFetch<SanityCollectionDoc | null>({
+      query,
+      params: { slug },
+      tags: isDraft ? [] : ["collections", `collection:${slug}`],
+      isDraftMode: isDraft,
+    });
+    return doc ? mapSanityCollection(doc) : null;
+  } catch (error) {
+    console.error(
+      `[Sanity Data Layer] Error fetching collection by slug ${slug}:`,
+      error instanceof Error ? error.message : "API failure"
+    );
+    return null;
+  }
 }
 
-export function getSiteConfig(): SiteConfig {
-  return SITE_CONFIG;
+export async function getSiteConfig(): Promise<SiteConfig> {
+  if (shouldServeMockData()) {
+    return SITE_CONFIG;
+  }
+
+  try {
+    const doc = await sanityFetch<SanitySiteSettingsDoc | null>({
+      query: SITE_SETTINGS_QUERY,
+      tags: ["siteSettings"],
+    });
+    return mapSanitySiteSettings(doc);
+  } catch (error) {
+    console.error("Sanity error fetching siteSettings:", error);
+    return SITE_CONFIG;
+  }
 }

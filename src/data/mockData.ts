@@ -4,18 +4,22 @@ import {
   SiteConfig,
   SITE_CONFIG,
   RAW_PHOTOGRAPHS,
-  getAllCollections,
-  getPhotographBySlug,
+  RAW_COLLECTIONS,
 } from "@/lib/data";
 
 export type { Photograph, Collection, SiteConfig };
 export { SITE_CONFIG };
 
 export const HERO_PHOTOGRAPH: Photograph =
-  getPhotographBySlug("morning-mist-on-alpine-waters") || RAW_PHOTOGRAPHS[0];
+  RAW_PHOTOGRAPHS.find((p) => p.slug === "morning-mist-on-alpine-waters") ||
+  RAW_PHOTOGRAPHS[0];
 
 export const FEATURED_PHOTOGRAPHS: Photograph[] = RAW_PHOTOGRAPHS.filter(
   (p) => p.featured && p.id !== "hero-plate"
 );
 
-export const COLLECTIONS = getAllCollections();
+export const COLLECTIONS: (Collection & { count: number })[] =
+  RAW_COLLECTIONS.map((c) => ({
+    ...c,
+    count: RAW_PHOTOGRAPHS.filter((p) => p.collectionSlug === c.slug).length,
+  }));

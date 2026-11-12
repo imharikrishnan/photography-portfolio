@@ -1,7 +1,13 @@
 import { SITE_CONFIG } from "@/data/mockData";
+import { SiteConfig } from "@/lib/data";
 import { Camera, Compass, Eye, Heart } from "lucide-react";
 
-export default function EditorialIntro() {
+interface EditorialIntroProps {
+  siteConfig?: SiteConfig;
+}
+
+export default function EditorialIntro({ siteConfig: propConfig }: EditorialIntroProps) {
+  const config = propConfig || SITE_CONFIG;
   return (
     <section className="py-16 md:py-24 px-5 sm:px-8 md:px-12 max-w-7xl mx-auto border-b border-white/10">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
@@ -21,7 +27,7 @@ export default function EditorialIntro() {
         <div className="lg:col-span-7 flex flex-col space-y-6 md:space-y-8 text-[#c8c5bc] font-light leading-relaxed text-sm sm:text-base md:text-lg">
           <p>
             Welcome to the personal photography portfolio of{" "}
-            <strong className="text-[#f4f2ec] font-normal">{SITE_CONFIG.photographerName}</strong>.
+            <strong className="text-[#f4f2ec] font-normal">{config.photographerName}</strong>.
             This space is created as a digital exhibition: an intimate, unhurried gallery
             showcasing photographs captured during travels, hikes, city walks, and everyday explorations.
           </p>
@@ -37,7 +43,7 @@ export default function EditorialIntro() {
             <div className="bg-white/[0.015] border border-white/5 p-3 sm:p-4">
               <Camera size={14} className="text-[#d4a373] mb-1.5" />
               <span className="block text-base sm:text-lg font-serif text-[#f4f2ec]">
-                EOS R6 Mark III
+                {config.camera.model}
               </span>
               <span className="text-[10px] text-[#73737c] tracking-widest uppercase mt-0.5 block">
                 Primary Camera

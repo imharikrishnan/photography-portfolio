@@ -5,8 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { SITE_CONFIG } from "@/data/mockData";
+import { SiteConfig } from "@/lib/data";
 
-export default function Navigation() {
+interface NavigationProps {
+  siteConfig?: SiteConfig;
+}
+
+export default function Navigation({ siteConfig: propConfig }: NavigationProps) {
+  const config = propConfig || SITE_CONFIG;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -38,10 +44,10 @@ export default function Navigation() {
             className="group flex flex-col items-start focus:outline-none"
           >
             <span className="font-serif text-base sm:text-lg md:text-xl tracking-wider text-[#f4f2ec] group-hover:text-white transition-colors duration-300 uppercase">
-              {SITE_CONFIG.photographerName}
+              {config.photographerName}
             </span>
             <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.2em] text-[#d4a373] uppercase">
-              {SITE_CONFIG.tagline}
+              {config.tagline}
             </span>
           </Link>
 

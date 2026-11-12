@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Photograph } from "@/data/mockData";
+import { Photograph } from "@/lib/data";
 import { X, MapPin, ChevronLeft, ChevronRight, Info } from "lucide-react";
 
 interface PhotoDetailModalProps {
@@ -68,12 +68,16 @@ export default function PhotoDetailModal({
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 60vw"
+              placeholder={photo.lqip ? "blur" : "empty"}
+              blurDataURL={photo.lqip}
               className="object-contain"
             />
 
-            <span className="absolute top-3 left-3 bg-[#08080a]/80 backdrop-blur-md px-2 py-0.5 border border-white/10 text-[10px] font-mono text-[#a1a1aa] uppercase tracking-wider">
-              {photo.sampleNote}
-            </span>
+            {photo.isPlaceholder && photo.sampleNote && (
+              <span className="absolute top-3 left-3 bg-[#08080a]/80 backdrop-blur-md px-2 py-0.5 border border-white/10 text-[10px] font-mono text-[#a1a1aa] uppercase tracking-wider">
+                {photo.sampleNote}
+              </span>
+            )}
           </div>
 
           {/* Stepper Navigation */}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import DraftPreviewBanner from "@/components/DraftPreviewBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[#08080a] text-[#f4f2ec] selection:bg-[#f4f2ec] selection:text-[#08080a] relative">
+        <DraftPreviewBanner />
         {/* Subtle persistent film grain overlay */}
         <div
           className="film-grain fixed inset-0 pointer-events-none z-50 opacity-30"

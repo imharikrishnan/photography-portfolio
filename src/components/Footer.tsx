@@ -2,8 +2,15 @@
 
 import { ArrowUp, Mail, MessageSquare } from "lucide-react";
 import { SITE_CONFIG } from "@/data/mockData";
+import { SiteConfig } from "@/lib/data";
 
-export default function Footer() {
+interface FooterProps {
+  siteConfig?: SiteConfig;
+}
+
+export default function Footer({ siteConfig: propConfig }: FooterProps) {
+  const config = propConfig || SITE_CONFIG;
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -21,10 +28,10 @@ export default function Footer() {
               [ Connect & Conversations ]
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#f4f2ec] font-light tracking-tight">
-              {SITE_CONFIG.contactHeading}
+              {config.contactHeading}
             </h2>
             <p className="font-sans text-xs sm:text-sm text-[#c8c5bc] font-light max-w-xl leading-relaxed">
-              {SITE_CONFIG.contactDescription}
+              {config.contactDescription}
             </p>
           </div>
 
@@ -34,7 +41,7 @@ export default function Footer() {
                 Contact Placeholder
               </span>
               <span className="text-[#f4f2ec] block text-sm">
-                {SITE_CONFIG.emailPlaceholder}
+                {config.emailPlaceholder}
               </span>
               <span className="text-[10px] text-[#73737c] block">
                 Configured securely in CMS
@@ -50,8 +57,8 @@ export default function Footer() {
               Photographer
             </span>
             <p className="leading-relaxed text-[#c8c5bc]">
-              {SITE_CONFIG.photographerName}<br />
-              {SITE_CONFIG.tagline}<br />
+              {config.photographerName}<br />
+              {config.tagline}<br />
               Personal Photography Archive
             </p>
           </div>
@@ -112,7 +119,7 @@ export default function Footer() {
         {/* Bottom Colophon Bar */}
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-[#73737c] gap-3">
           <span>© 2026 Hari. All rights reserved.</span>
-          <span>{SITE_CONFIG.tagline}</span>
+          <span>{config.tagline}</span>
         </div>
       </div>
     </footer>

@@ -7,6 +7,7 @@ import { FEATURED_PHOTOGRAPHS, Photograph } from "@/data/mockData";
 import { Eye, MapPin, Info, ArrowRight } from "lucide-react";
 
 interface FeaturedGalleryProps {
+  photos?: Photograph[];
   onSelectPhoto: (photo: Photograph) => void;
 }
 
@@ -20,14 +21,16 @@ const CATEGORIES = [
 ] as const;
 
 export default function FeaturedGallery({
+  photos: propPhotos,
   onSelectPhoto,
 }: FeaturedGalleryProps) {
+  const sourcePhotos = propPhotos !== undefined ? propPhotos : FEATURED_PHOTOGRAPHS;
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL PHOTOGRAPHS");
 
   const filteredPhotos =
     selectedCategory === "ALL PHOTOGRAPHS"
-      ? FEATURED_PHOTOGRAPHS
-      : FEATURED_PHOTOGRAPHS.filter(
+      ? sourcePhotos
+      : sourcePhotos.filter(
           (p) => p.category.toUpperCase() === selectedCategory
         );
 
@@ -47,8 +50,12 @@ export default function FeaturedGallery({
           </h2>
           <p className="font-mono text-xs text-[#a1a1aa] uppercase tracking-widest mt-1.5 flex items-center gap-1.5 flex-wrap">
             <span>Showing {filteredPhotos.length} Curated Plates</span>
-            <span className="text-[#73737c]">·</span>
-            <span className="text-[#d4a373]">Sample Visual Placeholders</span>
+            {filteredPhotos.some((p) => p.isPlaceholder) && (
+              <>
+                <span className="text-[#73737c]">·</span>
+                <span className="text-[#d4a373]">Sample Visual Placeholders</span>
+              </>
+            )}
           </p>
         </div>
 
@@ -74,109 +81,139 @@ export default function FeaturedGallery({
       </div>
 
       {/* Asymmetric Editorial Grid */}
-      <div className="pt-12 md:pt-16 space-y-16 sm:space-y-20 md:space-y-28">
-        {filteredPhotos.map((photo, index) => {
-          const isEven = index % 2 === 0;
-          const isPanoramic = photo.aspectRatio === "2.39:1";
-          const isSquare = photo.aspectRatio === "1:1";
+      {sourcePhotos.length === 0 ? (
+        <div className="py-20 my-8 border border-white/10 bg-white/[0.015] p-8 md:p-12 text-center space-y-4">
+          <span className="font-mono text-xs text-[#d4a373] tracking-[0.25em] uppercase block">
+            [ Exhibition Selection In Preparation ]
+          </span>
+          <h3 className="font-serif text-2xl sm:text-3xl text-[#f4f2ec]">
+            Exhibition Plates Awaiting Selection
+          </h3>
+          <p className="font-sans text-xs sm:text-sm text-[#a1a1aa] max-w-md mx-auto leading-relaxed">
+            Photographs marked as featured in Sanity Studio will appear in this curated selection.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-2 font-mono text-xs text-[#d4a373] hover:text-[#f4f2ec] transition-colors underline underline-offset-4"
+            >
+              <span>Explore Full Archive</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="pt-12 md:pt-16 space-y-16 sm:space-y-20 md:space-y-28">
+          {filteredPhotos.map((photo, index) => {
+            const isEven = index % 2 === 0;
+            const isPanoramic = photo.aspectRatio === "2.39:1";
+            const isSquare = photo.aspectRatio === "1:1";
 
-          if (isPanoramic) {
-            // Full-Width Cinemascope Composition
+            if (isPanoramic) {
+              // Full-Width Cinemascope Composition
+              return (
+                <div
+                  key={photo.id}
+                  className="group cursor-pointer space-y-4"
+                  onClick={() => onSelectPhoto(photo)}
+                >
+                  <div className="relative w-full aspect-[2.39/1] overflow-hidden bg-[#111114] border border-white/10 transition-colors duration-500 group-hover:border-[#d4a373]/50">
+                    <Image
+                      src={photo.imageUrl}
+                      alt={photo.alt}
+                      fill
+                      sizes="(max-width: 1200px) 100vw, 1280px"
+                      placeholder={photo.lqip ? "blur" : "empty"}
+                      blurDataURL={photo.lqip}
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.015] filter brightness-[0.92] group-hover:brightness-100"
+                    />
+                    <div className="absolute inset-0 bg-[#08080a]/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="inline-flex items-center space-x-2 px-4 py-2 bg-[#08080a]/85 backdrop-blur-md border border-white/20 text-xs font-mono tracking-widest text-[#f4f2ec] uppercase">
+                        <Eye size={13} />
+                        <span>View Story & Notes</span>
+                      </span>
+                    </div>
+
+                    {photo.isPlaceholder && photo.sampleNote && (
+                      <span className="absolute top-3 left-3 bg-[#08080a]/80 backdrop-blur-md px-2 py-0.5 border border-white/10 text-[10px] font-mono text-[#a1a1aa] uppercase tracking-wider">
+                        {photo.sampleNote}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Metadata Caption Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-t border-white/5 pt-3">
+                    <div className="flex items-baseline space-x-3">
+                      <span className="font-mono text-xs text-[#d4a373] tracking-wider font-medium">
+                        {photo.plateNumber}
+                      </span>
+                      <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-[#f4f2ec] group-hover:text-white transition-colors">
+                        {photo.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 font-mono text-xs text-[#a1a1aa]">
+                      <span className="text-[#f4f2ec]">{photo.location?.placename || "Travel Archive"}</span>
+                      <span>·</span>
+                      <span className="text-[#d4a373]">{photo.category}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            // Offset 2-Column Editorial Pairings
             return (
               <div
                 key={photo.id}
-                className="group cursor-pointer space-y-4"
-                onClick={() => onSelectPhoto(photo)}
-              >
-                <div className="relative w-full aspect-[2.39/1] overflow-hidden bg-[#111114] border border-white/10 transition-colors duration-500 group-hover:border-[#d4a373]/50">
-                  <Image
-                    src={photo.imageUrl}
-                    alt={photo.alt}
-                    fill
-                    sizes="(max-width: 1200px) 100vw, 1280px"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.015] filter brightness-[0.92] group-hover:brightness-100"
-                  />
-                  <div className="absolute inset-0 bg-[#08080a]/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span className="inline-flex items-center space-x-2 px-4 py-2 bg-[#08080a]/85 backdrop-blur-md border border-white/20 text-xs font-mono tracking-widest text-[#f4f2ec] uppercase">
-                      <Eye size={13} />
-                      <span>View Story & Notes</span>
-                    </span>
-                  </div>
-
-                  <span className="absolute top-3 left-3 bg-[#08080a]/80 backdrop-blur-md px-2 py-0.5 border border-white/10 text-[10px] font-mono text-[#a1a1aa] uppercase tracking-wider">
-                    {photo.sampleNote}
-                  </span>
-                </div>
-
-                {/* Metadata Caption Bar */}
-                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-t border-white/5 pt-3">
-                  <div className="flex items-baseline space-x-3">
-                    <span className="font-mono text-xs text-[#d4a373] tracking-wider font-medium">
-                      {photo.plateNumber}
-                    </span>
-                    <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-[#f4f2ec] group-hover:text-white transition-colors">
-                      {photo.title}
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-3 font-mono text-xs text-[#a1a1aa]">
-                    <span className="text-[#f4f2ec]">{photo.location?.placename || "Travel Archive"}</span>
-                    <span>·</span>
-                    <span className="text-[#d4a373]">{photo.category}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-
-          // Offset 2-Column Editorial Pairings
-          return (
-            <div
-              key={photo.id}
-              className={`grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center ${
-                isEven ? "" : "lg:flex-row-reverse"
-              }`}
-            >
-              {/* Image Frame Column */}
-              <div
-                className={`group cursor-pointer overflow-hidden ${
-                  isSquare
-                    ? "lg:col-span-6 lg:col-start-4"
-                    : isEven
-                    ? "lg:col-span-7"
-                    : "lg:col-span-7 lg:col-start-6"
+                className={`grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center ${
+                  isEven ? "" : "lg:flex-row-reverse"
                 }`}
-                onClick={() => onSelectPhoto(photo)}
               >
+                {/* Image Frame Column */}
                 <div
-                  className={`relative w-full overflow-hidden bg-[#111114] border border-white/10 transition-colors duration-500 group-hover:border-[#d4a373]/50 ${
-                    photo.aspectRatio === "4:5"
-                      ? "aspect-[4/5]"
-                      : photo.aspectRatio === "16:9"
-                      ? "aspect-[16/9]"
-                      : photo.aspectRatio === "1:1"
-                      ? "aspect-square"
-                      : "aspect-[3/2]"
+                  className={`group cursor-pointer overflow-hidden ${
+                    isSquare
+                      ? "lg:col-span-6 lg:col-start-4"
+                      : isEven
+                      ? "lg:col-span-7"
+                      : "lg:col-span-7 lg:col-start-6"
                   }`}
+                  onClick={() => onSelectPhoto(photo)}
                 >
-                  <Image
-                    src={photo.imageUrl}
-                    alt={photo.alt}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] filter brightness-[0.92] group-hover:brightness-100"
-                  />
-                  <div className="absolute inset-0 bg-[#08080a]/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span className="inline-flex items-center space-x-2 px-4 py-2 bg-[#08080a]/85 backdrop-blur-md border border-white/20 text-xs font-mono tracking-widest text-[#f4f2ec] uppercase">
-                      <Eye size={13} />
-                      <span>View Story & Notes</span>
-                    </span>
-                  </div>
+                  <div
+                    className={`relative w-full overflow-hidden bg-[#111114] border border-white/10 transition-colors duration-500 group-hover:border-[#d4a373]/50 ${
+                      photo.aspectRatio === "4:5"
+                        ? "aspect-[4/5]"
+                        : photo.aspectRatio === "16:9"
+                        ? "aspect-[16/9]"
+                        : photo.aspectRatio === "1:1"
+                        ? "aspect-square"
+                        : "aspect-[3/2]"
+                    }`}
+                  >
+                    <Image
+                      src={photo.imageUrl}
+                      alt={photo.alt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 60vw"
+                      placeholder={photo.lqip ? "blur" : "empty"}
+                      blurDataURL={photo.lqip}
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] filter brightness-[0.92] group-hover:brightness-100"
+                    />
+                    <div className="absolute inset-0 bg-[#08080a]/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="inline-flex items-center space-x-2 px-4 py-2 bg-[#08080a]/85 backdrop-blur-md border border-white/20 text-xs font-mono tracking-widest text-[#f4f2ec] uppercase">
+                        <Eye size={13} />
+                        <span>View Story & Notes</span>
+                      </span>
+                    </div>
 
-                  <span className="absolute top-3 left-3 bg-[#08080a]/80 backdrop-blur-md px-2 py-0.5 border border-white/10 text-[10px] font-mono text-[#a1a1aa] uppercase tracking-wider">
-                    {photo.sampleNote}
-                  </span>
+                    {photo.isPlaceholder && photo.sampleNote && (
+                      <span className="absolute top-3 left-3 bg-[#08080a]/80 backdrop-blur-md px-2 py-0.5 border border-white/10 text-[10px] font-mono text-[#a1a1aa] uppercase tracking-wider">
+                        {photo.sampleNote}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
               {/* Editorial Description Column */}
               <div
@@ -236,6 +273,7 @@ export default function FeaturedGallery({
           );
         })}
       </div>
+      )}
 
       {/* Link to Full Exhibition Gallery */}
       <div className="pt-16 text-center border-t border-white/10 mt-16">
