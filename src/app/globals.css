@@ -1,26 +1,90 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-obsidian: #08080a;
+  --color-pitch: #030304;
+  --color-carbon: #111114;
+  --color-carbon-card: #141418;
+  --color-carbon-hover: #1c1c22;
+  --color-bone: #f4f2ec;
+  --color-bone-muted: #c8c5bc;
+  --color-pewter: #73737c;
+  --color-pewter-dark: #3f3f46;
+  --color-bronze: #d4a373;
+  --color-amber-film: #e09f58;
+
+  --font-serif: "Cormorant Garamond", Didot, "Bodoni MT", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --bg-primary: #08080a;
+  --text-primary: #f4f2ec;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #08080a;
+  color: #f4f2ec;
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #08080a;
+  color: #f4f2ec;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom Selection */
+::selection {
+  background-color: #f4f2ec;
+  color: #08080a;
+}
+
+/* Subtle Film Grain */
+.film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Hairline borders */
+.border-hairline {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.border-hairline-light {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Glass & Vignette subtle overlays */
+.vignette-overlay {
+  background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(4, 4, 6, 0.75) 100%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #08080a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
 }
