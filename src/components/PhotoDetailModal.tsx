@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Photograph } from "@/data/mockData";
 import { X, MapPin, ChevronLeft, ChevronRight, Info } from "lucide-react";
 
@@ -136,7 +137,7 @@ export default function PhotoDetailModal({
                 <span className="text-[#73737c] text-[10px] block uppercase">Sample Scene / Subject</span>
                 <span className="text-[#f4f2ec] flex items-center gap-1.5">
                   <MapPin size={11} className="text-[#d4a373]" />
-                  {photo.location.placename}
+                  {photo.location?.placename || "Travel Archive"}
                 </span>
               </div>
               <div className="pt-1 text-[#a1a1aa] flex items-center gap-1.5 border-t border-white/5">
@@ -146,7 +147,14 @@ export default function PhotoDetailModal({
             </div>
           </div>
 
-          <div className="pt-2 flex justify-end">
+          <div className="pt-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+            <Link
+              href={`/gallery/${photo.slug}`}
+              onClick={onClose}
+              className="text-xs font-mono tracking-wider text-[#d4a373] hover:text-white transition-colors text-center sm:text-left"
+            >
+              View Full Plate Dossier →
+            </Link>
             <button
               onClick={onClose}
               className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-xs font-mono tracking-widest uppercase text-[#f4f2ec] border border-white/15 transition-colors"

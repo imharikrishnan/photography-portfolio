@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { HERO_PHOTOGRAPH, SITE_CONFIG } from "@/data/mockData";
 import { MapPin, Info } from "lucide-react";
@@ -60,12 +61,12 @@ export default function Hero({ onInspectPhoto }: HeroProps) {
           </p>
 
           <div className="pt-2 md:pt-4 flex flex-wrap gap-3 sm:gap-4 items-center">
-            <a
-              href="#works"
+            <Link
+              href="/gallery"
               className="inline-flex items-center justify-center px-6 py-3 border border-[#f4f2ec] text-[#08080a] bg-[#f4f2ec] text-xs font-mono tracking-widest uppercase hover:bg-white hover:shadow-lg transition-all duration-300 font-medium"
             >
               Explore Photographs
-            </a>
+            </Link>
             <button
               onClick={onInspectPhoto}
               className="inline-flex items-center justify-center px-6 py-3 border border-white/20 hover:border-white/50 text-[#f4f2ec] text-xs font-mono tracking-widest uppercase bg-[#08080a]/60 backdrop-blur-md transition-all duration-300"
@@ -83,7 +84,7 @@ export default function Hero({ onInspectPhoto }: HeroProps) {
           <div className="flex items-center space-x-2 text-[#f4f2ec]">
             <MapPin size={13} className="text-[#d4a373]" />
             <span className="tracking-wider uppercase font-medium">
-              {HERO_PHOTOGRAPH.location.placename}
+              {HERO_PHOTOGRAPH.location?.placename || "Travel Archive"}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[#c8c5bc]">

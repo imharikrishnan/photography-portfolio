@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { SITE_CONFIG } from "@/data/mockData";
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isGallery = pathname?.startsWith("/gallery");
+  const isCollections = pathname?.startsWith("/collections");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,34 +47,46 @@ export default function Navigation() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
-            <a
-              href="#works"
-              className="font-sans text-xs tracking-widest text-[#c8c5bc] hover:text-[#f4f2ec] transition-colors duration-300 uppercase py-1 relative group"
+            <Link
+              href="/gallery"
+              className={`font-sans text-xs tracking-widest uppercase py-1 relative group transition-colors duration-300 ${
+                isGallery ? "text-[#f4f2ec]" : "text-[#c8c5bc] hover:text-[#f4f2ec]"
+              }`}
             >
               Photographs
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#d4a373] transition-all duration-300 group-hover:w-full" />
-            </a>
-            <a
-              href="#series"
-              className="font-sans text-xs tracking-widest text-[#c8c5bc] hover:text-[#f4f2ec] transition-colors duration-300 uppercase py-1 relative group"
+              <span
+                className={`absolute bottom-0 left-0 h-[1px] bg-[#d4a373] transition-all duration-300 ${
+                  isGallery ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              />
+            </Link>
+            <Link
+              href="/collections"
+              className={`font-sans text-xs tracking-widest uppercase py-1 relative group transition-colors duration-300 ${
+                isCollections ? "text-[#f4f2ec]" : "text-[#c8c5bc] hover:text-[#f4f2ec]"
+              }`}
             >
               Journeys
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#d4a373] transition-all duration-300 group-hover:w-full" />
-            </a>
-            <a
-              href="#about"
+              <span
+                className={`absolute bottom-0 left-0 h-[1px] bg-[#d4a373] transition-all duration-300 ${
+                  isCollections ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              />
+            </Link>
+            <Link
+              href={pathname === "/" ? "#about" : "/#about"}
               className="font-sans text-xs tracking-widest text-[#c8c5bc] hover:text-[#f4f2ec] transition-colors duration-300 uppercase py-1 relative group"
             >
               About
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#d4a373] transition-all duration-300 group-hover:w-full" />
-            </a>
-            <a
-              href="#contact"
+            </Link>
+            <Link
+              href={pathname === "/" ? "#contact" : "/#contact"}
               className="font-sans text-xs tracking-widest text-[#c8c5bc] hover:text-[#f4f2ec] transition-colors duration-300 uppercase py-1 relative group"
             >
               Connect
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#d4a373] transition-all duration-300 group-hover:w-full" />
-            </a>
+            </Link>
           </nav>
 
           {/* Right Status Badge */}
@@ -116,38 +133,38 @@ export default function Navigation() {
           </div>
 
           <nav className="flex flex-col space-y-4">
-            <a
-              href="#works"
+            <Link
+              href="/gallery"
               onClick={() => setMobileMenuOpen(false)}
               className="font-serif text-2xl text-[#f4f2ec] hover:text-[#d4a373] transition-colors py-1 flex items-baseline justify-between border-b border-white/5"
             >
               <span>01 / Photographs</span>
               <span className="font-mono text-[11px] text-[#73737c]">Gallery</span>
-            </a>
-            <a
-              href="#series"
+            </Link>
+            <Link
+              href="/collections"
               onClick={() => setMobileMenuOpen(false)}
               className="font-serif text-2xl text-[#f4f2ec] hover:text-[#d4a373] transition-colors py-1 flex items-baseline justify-between border-b border-white/5"
             >
               <span>02 / Travel Journeys</span>
               <span className="font-mono text-[11px] text-[#73737c]">Collections</span>
-            </a>
-            <a
-              href="#about"
+            </Link>
+            <Link
+              href={pathname === "/" ? "#about" : "/#about"}
               onClick={() => setMobileMenuOpen(false)}
               className="font-serif text-2xl text-[#f4f2ec] hover:text-[#d4a373] transition-colors py-1 flex items-baseline justify-between border-b border-white/5"
             >
               <span>03 / About Me</span>
               <span className="font-mono text-[11px] text-[#73737c]">Behind the Lens</span>
-            </a>
-            <a
-              href="#contact"
+            </Link>
+            <Link
+              href={pathname === "/" ? "#contact" : "/#contact"}
               onClick={() => setMobileMenuOpen(false)}
               className="font-serif text-2xl text-[#f4f2ec] hover:text-[#d4a373] transition-colors py-1 flex items-baseline justify-between border-b border-white/5"
             >
               <span>04 / Let&apos;s Connect</span>
               <span className="font-mono text-[11px] text-[#73737c]">Get in Touch</span>
-            </a>
+            </Link>
           </nav>
         </div>
 

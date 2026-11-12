@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { FEATURED_PHOTOGRAPHS, Photograph } from "@/data/mockData";
-import { Eye, MapPin, Info } from "lucide-react";
+import { Eye, MapPin, Info, ArrowRight } from "lucide-react";
 
 interface FeaturedGalleryProps {
   onSelectPhoto: (photo: Photograph) => void;
@@ -118,7 +119,7 @@ export default function FeaturedGallery({
                     </h3>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-3 font-mono text-xs text-[#a1a1aa]">
-                    <span className="text-[#f4f2ec]">{photo.location.placename}</span>
+                    <span className="text-[#f4f2ec]">{photo.location?.placename || "Travel Archive"}</span>
                     <span>·</span>
                     <span className="text-[#d4a373]">{photo.category}</span>
                   </div>
@@ -209,7 +210,7 @@ export default function FeaturedGallery({
                   <div className="flex items-center justify-between text-[#f4f2ec]">
                     <span className="flex items-center gap-1.5 font-medium">
                       <MapPin size={12} className="text-[#d4a373]" />
-                      {photo.location.placename}
+                      {photo.location?.placename || "Travel Archive"}
                     </span>
                     <span className="text-[#d4a373] text-[11px]">{photo.category}</span>
                   </div>
@@ -234,6 +235,17 @@ export default function FeaturedGallery({
             </div>
           );
         })}
+      </div>
+
+      {/* Link to Full Exhibition Gallery */}
+      <div className="pt-16 text-center border-t border-white/10 mt-16">
+        <Link
+          href="/gallery"
+          className="inline-flex items-center space-x-3 px-8 py-4 bg-white/[0.03] hover:bg-white/[0.08] border border-white/20 hover:border-[#d4a373] text-xs font-mono tracking-[0.2em] text-[#f4f2ec] uppercase transition-all duration-300 group"
+        >
+          <span>Explore Complete Exhibition Gallery</span>
+          <ArrowRight size={14} className="text-[#d4a373] transition-transform group-hover:translate-x-1" />
+        </Link>
       </div>
     </section>
   );

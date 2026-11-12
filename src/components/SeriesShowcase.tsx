@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { COLLECTIONS } from "@/data/mockData";
 import { ArrowUpRight } from "lucide-react";
@@ -24,9 +25,10 @@ export default function SeriesShowcase() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 pt-12 md:pt-16">
         {COLLECTIONS.map((collection) => (
-          <div
+          <Link
             key={collection.id}
-            className="group cursor-pointer flex flex-col justify-between p-5 sm:p-6 bg-white/[0.015] hover:bg-white/[0.04] border border-white/10 hover:border-[#d4a373]/40 transition-all duration-500"
+            href={`/collections/${collection.slug}`}
+            className="group flex flex-col justify-between p-5 sm:p-6 bg-white/[0.015] hover:bg-white/[0.04] border border-white/10 hover:border-[#d4a373]/40 transition-all duration-500"
           >
             <div>
               {/* Collection Cover Image */}
@@ -39,7 +41,7 @@ export default function SeriesShowcase() {
                   className="object-cover filter brightness-[0.9] group-hover:scale-105 group-hover:brightness-100 transition-all duration-700"
                 />
                 <span className="absolute top-2.5 right-2.5 font-mono text-[10px] tracking-widest uppercase bg-[#08080a]/85 backdrop-blur-md px-2 py-0.5 border border-white/15 text-[#f4f2ec]">
-                  Sample Collection
+                  {collection.count} Plates
                 </span>
               </div>
 
@@ -62,7 +64,7 @@ export default function SeriesShowcase() {
                 className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-[#d4a373]"
               />
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
