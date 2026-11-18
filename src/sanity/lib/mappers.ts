@@ -22,14 +22,24 @@ export function mapSanityPhotograph(doc: SanityPhotographDoc): Photograph {
   const shutterSpeed = exif?.shutterSpeed?.trim() || undefined;
   const iso = exif?.iso?.trim() || undefined;
 
+  const fallbackTitle =
+    doc.title?.trim() ||
+    (doc.plateNumber ? `Plate ${doc.plateNumber}` : "Untitled Plate");
+  const fallbackSlug = doc.slug?.trim() || doc._id;
+  const fallbackAlt =
+    doc.image?.alt?.trim() ||
+    doc.image?.caption?.trim() ||
+    doc.title?.trim() ||
+    "Exhibition plate by Harikrishnan Nandanan";
+
   return {
     id: doc._id,
-    slug: doc.slug,
-    title: doc.title,
+    slug: fallbackSlug,
+    title: fallbackTitle,
     imageUrl: imageUrl || "/placeholder.jpg",
-    alt: doc.image?.alt || doc.title,
-    category: doc.category,
-    displayOrder: doc.displayOrder ?? 0,
+    alt: fallbackAlt,
+    category: doc.category || undefined,
+    displayOrder: doc.displayOrder ?? undefined,
     plateNumber: doc.plateNumber || undefined,
     aspectRatio: doc.aspectRatio || undefined,
     caption: doc.image?.caption || undefined,
@@ -52,9 +62,12 @@ export function mapSanityPhotograph(doc: SanityPhotographDoc): Photograph {
     shutterSpeed,
     iso,
     featured: Boolean(doc.featured),
+    isHero: Boolean(doc.isHero),
     isPlaceholder: Boolean(doc.isPlaceholder),
     sampleNote: doc.sampleNote || undefined,
     lqip,
+    visualMetadata: doc.visualMetadata,
+    curationControls: doc.curationControls,
   };
 }
 

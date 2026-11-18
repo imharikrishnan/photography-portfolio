@@ -29,17 +29,79 @@ export interface SanityImage {
   caption?: string;
 }
 
+export type ColorFamily =
+  | "monochrome"
+  | "warm-earth"
+  | "cool-slate"
+  | "emerald-forest"
+  | "golden-hour"
+  | "crimson-accent"
+  | "deep-night"
+  | "high-key-light"
+  | "muted-neutral";
+
+export type ImageOrientation = "portrait" | "landscape" | "square";
+
+export interface ColorSwatch {
+  hex: string;
+  rgb?: {
+    r: number;
+    g: number;
+    b: number;
+  };
+  hsl?: {
+    h: number;
+    s: number;
+    l: number;
+  };
+  lab?: {
+    l: number;
+    a: number;
+    b: number;
+  };
+  population?: number;
+  role?: "dominant" | "accent" | "background" | "muted" | string;
+}
+
+export interface PhotographVisualMetadata {
+  status?: "pending" | "analyzed" | "failed";
+  version?: number;
+  sourceAssetRef?: string;
+  analyzedAt?: string;
+  dominantColor?: ColorSwatch;
+  palette?: ColorSwatch[];
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+  colorTemperature?: number;
+  colorFamily?: ColorFamily;
+  orientation?: ImageOrientation;
+  aspectRatioNumeric?: number;
+  error?: string;
+}
+
+export interface CurationControls {
+  pinnedPosition?: number;
+  forcePunctuation?: boolean;
+  manualColorFamily?: ColorFamily;
+}
+
 export interface SanityPhotographDoc {
   _id: string;
   _createdAt?: string;
   _updatedAt?: string;
-  title: string;
-  slug: string;
+  title?: string;
+  slug?: string;
   plateNumber?: string;
   displayOrder?: number;
   image: SanityImage;
   aspectRatio?: "4:5" | "16:9" | "1:1" | "2.39:1" | "3:2";
-  category: "Landscapes" | "Travel & Streets" | "Nature & Wildlife" | "People & Portraits" | "Architecture";
+  category?:
+    | "Landscapes"
+    | "Travel & Streets"
+    | "Nature & Wildlife"
+    | "People & Portraits"
+    | "Architecture";
   collection?: {
     _id: string;
     title: string;
@@ -66,6 +128,8 @@ export interface SanityPhotographDoc {
   };
   isPlaceholder?: boolean;
   sampleNote?: string;
+  visualMetadata?: PhotographVisualMetadata;
+  curationControls?: CurationControls;
 }
 
 export interface SanityCollectionDoc {

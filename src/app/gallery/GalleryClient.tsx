@@ -261,7 +261,7 @@ export default function GalleryClient({
                       <div className="space-y-1">
                         <div className="flex items-baseline space-x-3">
                           <span className="font-mono text-xs text-[#d4a373] tracking-wider font-medium">
-                            {photo.plateNumber}
+                            {photo.plateNumber || "PLATE"}
                           </span>
                           <Link
                             href={`/gallery/${photo.slug}`}
@@ -284,8 +284,19 @@ export default function GalleryClient({
                             {photo.location.placename}
                           </span>
                         )}
-                        <span>·</span>
-                        <span className="text-[#d4a373]">{photo.category}</span>
+                        {photo.category ? (
+                          <>
+                            <span>·</span>
+                            <span className="text-[#d4a373]">{photo.category}</span>
+                          </>
+                        ) : photo.visualMetadata?.colorFamily ? (
+                          <>
+                            <span>·</span>
+                            <span className="text-[#d4a373] capitalize">
+                              {photo.visualMetadata.colorFamily.replace(/-/g, " ")}
+                            </span>
+                          </>
+                        ) : null}
                         {photo.cameraModel && (
                           <>
                             <span>·</span>
@@ -403,7 +414,15 @@ export default function GalleryClient({
                         </div>
                       )}
                       <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-[#73737c]">
-                        <span>Genre: {photo.category}</span>
+                        {photo.category ? (
+                          <span>Genre: {photo.category}</span>
+                        ) : photo.visualMetadata?.colorFamily ? (
+                          <span className="capitalize">
+                            Palette: {photo.visualMetadata.colorFamily.replace(/-/g, " ")}
+                          </span>
+                        ) : (
+                          <span>Visual Archive</span>
+                        )}
                         {photo.captureDate && (
                           <>
                             <span>·</span>

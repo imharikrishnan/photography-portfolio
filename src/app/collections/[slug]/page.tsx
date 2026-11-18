@@ -206,8 +206,19 @@ export default async function CollectionDetailPage({ params }: PageProps) {
                             {photo.location.placename}
                           </span>
                         )}
-                        <span>·</span>
-                        <span className="text-[#d4a373]">{photo.category}</span>
+                        {photo.category ? (
+                          <>
+                            <span>·</span>
+                            <span className="text-[#d4a373]">{photo.category}</span>
+                          </>
+                        ) : photo.visualMetadata?.colorFamily ? (
+                          <>
+                            <span>·</span>
+                            <span className="text-[#d4a373] capitalize">
+                              {photo.visualMetadata.colorFamily.replace(/-/g, " ")}
+                            </span>
+                          </>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -295,8 +306,11 @@ export default async function CollectionDetailPage({ params }: PageProps) {
                             <MapPin size={12} className="text-[#d4a373]" />
                             {photo.location.placename}
                           </span>
-                          <span className="text-[#d4a373] text-[11px]">
-                            {photo.category}
+                          <span className="text-[#d4a373] text-[11px] capitalize">
+                            {photo.category ||
+                              (photo.visualMetadata?.colorFamily
+                                ? photo.visualMetadata.colorFamily.replace(/-/g, " ")
+                                : "Collection Plate")}
                           </span>
                         </div>
                       </div>

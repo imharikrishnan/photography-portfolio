@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DraftPreviewBanner from "@/components/DraftPreviewBanner";
+import MotionProvider from "@/components/motion/MotionProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -52,7 +53,7 @@ export default function RootLayout({
           className="film-grain fixed inset-0 pointer-events-none z-50 opacity-30"
           aria-hidden="true"
         />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );

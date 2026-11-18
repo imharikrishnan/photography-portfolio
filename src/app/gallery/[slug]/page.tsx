@@ -297,15 +297,40 @@ export default async function PhotographDetailPage({ params }: PageProps) {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
-                  <span className="text-[#73737c] flex items-center gap-1.5 uppercase">
-                    <Layers size={12} className="text-[#d4a373]" />
-                    Category
-                  </span>
-                  <span className="text-[#d4a373] font-medium">
-                    {photo.category}
-                  </span>
-                </div>
+                {photo.category ? (
+                  <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
+                    <span className="text-[#73737c] flex items-center gap-1.5 uppercase">
+                      <Layers size={12} className="text-[#d4a373]" />
+                      Category
+                    </span>
+                    <span className="text-[#d4a373] font-medium">
+                      {photo.category}
+                    </span>
+                  </div>
+                ) : photo.visualMetadata?.colorFamily ? (
+                  <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
+                    <span className="text-[#73737c] flex items-center gap-1.5 uppercase">
+                      <Layers size={12} className="text-[#d4a373]" />
+                      Palette
+                    </span>
+                    <span className="text-[#d4a373] font-medium capitalize">
+                      {photo.visualMetadata.colorFamily.replace(/-/g, " ")}
+                    </span>
+                  </div>
+                ) : null}
+
+                {photo.visualMetadata?.dominantColor?.hex && (
+                  <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
+                    <span className="text-[#73737c] uppercase">Dominant Tone</span>
+                    <span className="text-[#a1a1aa] flex items-center gap-1.5">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full border border-white/20"
+                        style={{ backgroundColor: photo.visualMetadata.dominantColor.hex }}
+                      />
+                      <span className="uppercase">{photo.visualMetadata.dominantColor.hex}</span>
+                    </span>
+                  </div>
+                )}
 
                 {(photo.captureDate || photo.year) && (
                   <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">

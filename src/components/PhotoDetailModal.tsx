@@ -45,7 +45,7 @@ export default function PhotoDetailModal({
       <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-between z-20 pointer-events-none">
         <div className="font-mono text-xs text-[#d4a373] tracking-widest uppercase flex items-center space-x-2 bg-[#08080a]/80 backdrop-blur-md px-3 py-1.5 border border-white/10 rounded-sm">
           <span className="w-1.5 h-1.5 bg-[#d4a373] rounded-full" />
-          <span>Plate Inspector · {photo.plateNumber}</span>
+          <span>Plate Inspector · {photo.plateNumber || "Plate"}</span>
         </div>
 
         <button
@@ -107,47 +107,73 @@ export default function PhotoDetailModal({
         <div className="lg:col-span-5 flex flex-col space-y-5">
           <div className="space-y-1.5">
             <div className="flex items-center space-x-2 font-mono text-xs text-[#d4a373] tracking-widest uppercase">
-              <span>{photo.plateNumber}</span>
-              <span>·</span>
-              <span>{photo.series}</span>
+              <span>{photo.plateNumber || "EXHIBITION PLATE"}</span>
+              {photo.series && (
+                <>
+                  <span className="text-white/20">·</span>
+                  <span className="text-[#c8c5bc]">{photo.series}</span>
+                </>
+              )}
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl text-[#f4f2ec]">
               {photo.title}
             </h2>
-            <p className="font-sans text-xs text-[#c8c5bc] font-light leading-relaxed">
-              {photo.caption}
-            </p>
+            {photo.caption && (
+              <p className="font-sans text-xs text-[#c8c5bc] font-light leading-relaxed">
+                {photo.caption}
+              </p>
+            )}
           </div>
 
           {/* Visual Notes Box */}
-          <div className="p-4 bg-white/[0.02] border-l-2 border-[#d4a373] space-y-1.5">
-            <span className="font-mono text-[10px] text-[#d4a373] tracking-widest uppercase block">
-              Curatorial Notes
-            </span>
-            <p className="font-sans text-xs text-[#e4e2db] leading-relaxed italic">
-              {photo.notes}
-            </p>
-          </div>
+          {photo.notes && (
+            <div className="p-4 bg-white/[0.02] border-l-2 border-[#d4a373] space-y-1.5">
+              <span className="font-mono text-[10px] text-[#d4a373] tracking-widest uppercase block">
+                Curatorial Notes
+              </span>
+              <p className="font-sans text-xs text-[#e4e2db] leading-relaxed italic">
+                {photo.notes}
+              </p>
+            </div>
+          )}
 
           {/* Plate Metadata Card */}
           <div className="p-4 bg-white/[0.02] border border-white/10 space-y-2.5 font-mono text-xs text-[#c8c5bc]">
             <div className="flex items-center justify-between text-[#d4a373] tracking-wider uppercase border-b border-white/5 pb-2 text-[11px]">
               <span>Exhibition Plate Details</span>
-              <span className="text-[#f4f2ec]">{photo.category}</span>
+              <span className="text-[#f4f2ec]">
+                {photo.category ||
+                  (photo.visualMetadata?.colorFamily
+                    ? `Palette: ${photo.visualMetadata.colorFamily.replace(/-/g, " ")}`
+                    : "Visual Archive")}
+              </span>
             </div>
 
             <div className="space-y-1.5 text-[11px]">
-              <div>
-                <span className="text-[#73737c] text-[10px] block uppercase">Sample Scene / Subject</span>
-                <span className="text-[#f4f2ec] flex items-center gap-1.5">
-                  <MapPin size={11} className="text-[#d4a373]" />
-                  {photo.location?.placename || "Travel Archive"}
-                </span>
-              </div>
-              <div className="pt-1 text-[#a1a1aa] flex items-center gap-1.5 border-t border-white/5">
-                <Info size={11} className="text-[#d4a373]" />
-                <span className="text-[10px] text-[#c8c5bc]">Sample layout placeholder — personal travels will be uploaded via CMS.</span>
-              </div>
+              {photo.location?.placename ? (
+                <div>
+                  <span className="text-[#73737c] text-[10px] block uppercase">Scene / Subject</span>
+                  <span className="text-[#f4f2ec] flex items-center gap-1.5">
+                    <MapPin size={11} className="text-[#d4a373]" />
+                    {photo.location.placename}
+                    {photo.location.region ? `, ${photo.location.region}` : ""}
+                  </span>
+                </div>
+              ) : photo.cameraModel ? (
+                <div>
+                  <span className="text-[#73737c] text-[10px] block uppercase">Camera Body</span>
+                  <span className="text-[#f4f2ec]">{photo.cameraModel}</span>
+                </div>
+              ) : null}
+
+              {photo.isPlaceholder && (
+                <div className="pt-1 text-[#a1a1aa] flex items-center gap-1.5 border-t border-white/5">
+                  <Info size={11} className="text-[#d4a373]" />
+                  <span className="text-[10px] text-[#c8c5bc]">
+                    {photo.sampleNote || "Sample layout placeholder — personal travels will be uploaded via CMS."}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

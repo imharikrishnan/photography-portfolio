@@ -5,6 +5,63 @@ export type PhotographCategory =
   | "People & Portraits"
   | "Architecture";
 
+export type ColorFamily =
+  | "monochrome"
+  | "warm-earth"
+  | "cool-slate"
+  | "emerald-forest"
+  | "golden-hour"
+  | "crimson-accent"
+  | "deep-night"
+  | "high-key-light"
+  | "muted-neutral";
+
+export type ImageOrientation = "portrait" | "landscape" | "square";
+
+export interface ColorSwatch {
+  hex: string;
+  rgb?: {
+    r: number;
+    g: number;
+    b: number;
+  };
+  hsl?: {
+    h: number;
+    s: number;
+    l: number;
+  };
+  lab?: {
+    l: number;
+    a: number;
+    b: number;
+  };
+  population?: number;
+  role?: "dominant" | "accent" | "background" | "muted" | string;
+}
+
+export interface PhotographVisualMetadata {
+  status?: "pending" | "analyzed" | "failed";
+  version?: number;
+  sourceAssetRef?: string;
+  analyzedAt?: string;
+  dominantColor?: ColorSwatch;
+  palette?: ColorSwatch[];
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+  colorTemperature?: number;
+  colorFamily?: ColorFamily;
+  orientation?: ImageOrientation;
+  aspectRatioNumeric?: number;
+  error?: string;
+}
+
+export interface CurationControls {
+  pinnedPosition?: number;
+  forcePunctuation?: boolean;
+  manualColorFamily?: ColorFamily;
+}
+
 export type PhotographAspectRatio =
   | "4:5"
   | "16:9"
@@ -28,16 +85,18 @@ export interface PhotographCameraExif {
 }
 
 export interface Photograph {
-  // Required fields
+  // Core display identifiers
   id: string;
   slug: string;
   title: string;
   imageUrl: string;
   alt: string;
-  category: PhotographCategory;
-  displayOrder: number;
 
-  // Optional fields
+  // Optional categorization and sequence
+  category?: PhotographCategory;
+  displayOrder?: number;
+
+  // Optional curatorial & editorial fields
   plateNumber?: string;
   aspectRatio?: PhotographAspectRatio;
   caption?: string;
@@ -55,9 +114,14 @@ export interface Photograph {
   shutterSpeed?: string;
   iso?: string;
   featured?: boolean;
+  isHero?: boolean;
   isPlaceholder?: boolean;
   sampleNote?: string;
   lqip?: string;
+
+  // Visual intelligence & curation
+  visualMetadata?: PhotographVisualMetadata;
+  curationControls?: CurationControls;
 }
 
 export interface Collection {
@@ -637,7 +701,9 @@ export async function getAllPhotographs(
   options?: FetchOptions
 ): Promise<Photograph[]> {
   if (shouldServeMockData()) {
-    return [...RAW_PHOTOGRAPHS].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...RAW_PHOTOGRAPHS].sort(
+      (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+    );
   }
 
   try {

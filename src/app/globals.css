@@ -88,3 +88,27 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
+
+/* Accessibility: WCAG 2.2 Compliant Reduced-Motion Rules */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    /* Compress decorative spatial animations to near-instant while preserving functional state updates */
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Eliminate continuous pulsing and bouncing loops */
+  .animate-ping,
+  .animate-bounce,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+

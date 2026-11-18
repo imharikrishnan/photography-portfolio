@@ -54,7 +54,40 @@ const PHOTOGRAPH_FIELDS = groq`
     iso
   },
   isPlaceholder,
-  sampleNote
+  sampleNote,
+  visualMetadata {
+    status,
+    version,
+    sourceAssetRef,
+    analyzedAt,
+    dominantColor {
+      hex,
+      rgb { r, g, b },
+      hsl { h, s, l },
+      lab { l, a, b }
+    },
+    palette[] {
+      hex,
+      rgb { r, g, b },
+      hsl { h, s, l },
+      lab { l, a, b },
+      population,
+      role
+    },
+    brightness,
+    contrast,
+    saturation,
+    colorTemperature,
+    colorFamily,
+    orientation,
+    aspectRatioNumeric,
+    error
+  },
+  curationControls {
+    pinnedPosition,
+    forcePunctuation,
+    manualColorFamily
+  }
 `;
 
 // Shared projection for travel collection documents
