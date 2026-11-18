@@ -1,29 +1,30 @@
 # PROJECT CONTEXT & HANDOFF SPECIFICATION
 
 **Project:** Personal Travel Photography Portfolio × Fine-Art Exhibition  
+**Concept:** "The Curated Monolith — An Intelligent Visual Journal"  
 **Photographer:** Harikrishnan Nandanan  
 **Watermark:** `HARI`  
 **Copyright:** `© 2026 Hari. All rights reserved.`  
 **Primary Camera:** Canon EOS R6 Mark III  
-**Current Milestone:** Phase 4 Complete (Sanity CMS Integration, Studio, Data Mapping, Secure Draft Previews, and Webhook Revalidation)  
-**Next Milestone:** Phase 5 (Animation & Micro-interactions: Framer Motion, Kinetic Reveal & Telemetry Transitions)
+**Current Milestone:** Phase 4.5 Checkpoint B Complete (Zero-Friction Photography Archive Foundation)  
+**Next Milestone:** Phase 4.5 Checkpoint C (Sanity Studio Bulk Uploader & Intake Pipeline)  
+**Paused Milestone:** Phase 5 Stage C & D (Gallery/Detail Cinematic Page Transitions & Performance QA)
 
 ---
 
 ## 1. Project Vision & Creative Philosophy
 
 ### Core Creative Direction
-* **Personal Portfolio × Fine-Art Exhibition Aesthetic:** The website is fundamentally a **personal travel photography portfolio for a hobbyist**, presented through the visual language and cinematic atmosphere of a premium fine-art exhibition.
+* **Personal Portfolio × Fine-Art Exhibition Aesthetic:** The website is fundamentally a **personal travel photography journal for a hobbyist**, presented through the visual language and cinematic atmosphere of a premium fine-art exhibition (70% personal visual journal, 30% museum-grade fine-art exhibition).
 * **Authentic Personal Identity:**
   * **Photographer:** Harikrishnan Nandanan.
-  * **Role & Background:** A hobbyist photographer who enjoys travelling, exploring unfamiliar places, and taking photographs along the way.
-  * **Personal Passion, Not a Business:** Photography is a creative hobby and a personal medium for documenting light, places, and memories. **Harikrishnan does not own a photography studio, operate a commercial business, offer photography services for hire, or have gallery representation.**
+  * **Role & Background:** A hobbyist photographer who travels, explores unfamiliar places, and takes photographs along the way.
+  * **Personal Passion, Not a Business:** Photography is a personal creative pursuit and medium for documenting light, places, and memories. **Harikrishnan does not own a commercial studio, operate a business for hire, offer photography services, or have gallery representation.**
   * **Tagline:** *Photography · Travel · Visual Stories*
   * **Primary Camera:** **Canon EOS R6 Mark III**. (No unverified lens collections, artificial gear catalogues, or invented equipment).
   * **Watermark & Copyright:** Monumental footer watermark displays **`HARI`**; bottom colophon reads **`© 2026 Hari. All rights reserved.`**
-* **Zero Fictional Claims:** The portfolio strictly eliminates all fabricated commercial jargon ("Studio & Inquiries", "Commissions Worldwide", "Available for Assignments"), fabricated awards, fake Steidl monographs, invented Biennales, or fake representation relationships. Factual contact information is decoupled into configurable placeholders in Sanity `siteSettings`.
-* **Photographic Integrity & Equipment Attribution:** The Canon EOS R6 Mark III is Harikrishnan's personal camera. Individual photograph EXIF fields are strictly optional. Photographic telemetry is displayed only when authentic data is available in Sanity; camera metadata is never fabricated.
-* **Multi-Genre Breadth:** Accommodates landscapes, travel, street scenes, wildlife, people, and architectural geometry.
+* **Zero Fictional Claims:** The portfolio strictly eliminates all fabricated commercial jargon ("Studio & Inquiries", "Commissions Worldwide", "Available for Assignments"), fabricated awards, fake monographs, invented Biennales, or fake representation relationships. Factual contact information is decoupled into configurable placeholders in Sanity `siteSettings`.
+* **Photographic Integrity & Equipment Attribution:** The Canon EOS R6 Mark III is Harikrishnan's authentic camera. Individual photograph EXIF fields are strictly optional. Photographic telemetry is displayed only when authentic data is available in Sanity; camera metadata is never fabricated.
 * **The Exhibition Atmosphere:** Uses numbered exhibition plates (`PLATE 00`, `PLATE 01`...), thematic travel series (*Wanderings & Wild Places*, *City Streets & Travel Notes*, *Forms & Spaces*), editorial captions, and museum-grade negative space to give personal travel photography an elevated, cinematic presentation.
 
 ---
@@ -55,6 +56,7 @@
 
 * **Framework:** Next.js `16.4.6` (App Router)
 * **UI Library:** React `19.3.0` & React DOM `19.3.0`
+* **Motion Library:** `motion` `^12.4.7` (imported via `motion/react`)
 * **Language:** TypeScript `^5` (Strict typing enabled in `tsconfig.json`)
 * **Styling:** Tailwind CSS `4.3.3` with `@tailwindcss/postcss` `4.3.3`
 * **Bundler Pipeline:** Webpack compiler pipeline (`next build --webpack` / `next dev --webpack`)
@@ -64,7 +66,134 @@
 
 ---
 
-## 4. Complete Phase 4 Architecture & File Mapping
+## 4. Completed Phases & Project History
+
+### Phases 1–4: Core Foundation & CMS Integration (Completed)
+* **Phase 1: Architecture & Theme Foundation:** Setup Next.js App Router, Tailwind 4 theme, fine-art design system, typography matrix, and mock data models.
+* **Phase 2: Core Components & Layout:** Implemented Navigation, Hero, EditorialIntro, FeaturedGallery, SeriesShowcase, AboutSection, and Footer.
+* **Phase 3: Route Architecture:** Built full `/gallery`, `/gallery/[slug]`, `/collections`, and `/collections/[slug]` routes with responsive fine-art plate dossiers.
+* **Phase 4: Sanity CMS & On-Demand ISR:** Embedded Sanity Studio at `/studio`, created Sanity schemas (`photograph`, `collection`, `siteSettings`), integrated deterministic mappers, implemented secure authenticated Draft Mode (`/api/draft-mode/enable|disable`), and configured HMAC-SHA256 webhook cache revalidation (`/api/revalidate`).
+
+### Phase 5: Cinematic Animations & Micro-interactions (Stage A & B Complete, C & D Paused)
+* **Stage A: Motion Architecture & Reusable Primitives (Completed):**
+  * Integrated `motion/react` with React 19 compatibility.
+  * Created `src/lib/motion.ts` with shared editorial easings (`[0.16, 1, 0.3, 1]`), durations, and stagger presets.
+  * Built `MotionProvider` respecting `prefers-reduced-motion` while keeping `layout.tsx` as a Server Component.
+  * Implemented reusable primitives: `ScrollReveal`, `TextReveal`, and `ImageVeil`.
+  * Verified in real browser with zero hydration mismatches, zero SSR layout shifts, and full reduced-motion accessibility.
+* **Stage B: Homepage Cinematic Enhancements (Completed):**
+  * **Checkpoint B1 (Hero & Navigation):** Subtle scale settle ($1.04 \to 1.00$) on hero background image; staggered editorial headline reveals; sticky navigation backdrop blur and threshold transitions.
+  * **Checkpoint B2 (Editorial Intro & Featured Gallery):** Downward bronze accent line draw; staggered narrative reveals; plate scroll reveals with selective `ImageVeil`; spring-animated active category filter pills.
+  * **Checkpoint B3 (About Section & Monumental Footer):** Scroll-triggered portrait reveal; personal philosophy entrance; Canon EOS R6 Mark III telemetry slate reveal; monumental `HARI` watermark entrance.
+* **Stage C & D (Paused):** Gallery/detail page transition choreography and final cross-browser animation QA are paused while Phase 4.5 intelligent archive capabilities are built.
+
+---
+
+## 5. Phase 4.5: Intelligent Photography Archive
+
+### Checkpoint A: Architectural Decisions & Mathematical Formulation (Completed)
+1. **Perceptual Color Sequencing ($\Delta E^*_{ab}$):**
+   * Replaced raw RGB Euclidean distance with CIE $L^*a^*b^*$ perceptual color distance to match human visual perception.
+   * Color distance metric:
+     $$\Delta E^*_{ab} = \sqrt{(\Delta L^*)^2 + (\Delta a^*)^2 + (\Delta b^*)^2}$$
+2. **Normalized Transition Cost Formula:**
+   * Sequence transition cost is computed by normalizing all factors to $[0, 1]$ before applying weights:
+     $$C(A, B) = w_c \cdot \frac{\Delta E^*_{ab}}{100} + w_l \cdot \frac{|\Delta L^*|}{100} + w_s \cdot |\Delta S| + w_a \cdot \Delta_{aspect} + w_o \cdot \Delta_{orient} + w_g \cdot \Delta_{genre}$$
+3. **Curation Overrides & Conflict Resolution:**
+   * Handled arbitrary 1-indexed `pinnedPosition` values.
+   * If conflicts occur (multiple photographs requesting the same position), tie-breaking favors manual curator priority, followed by creation timestamp, shifting remaining items to the next open slot.
+   * Punctuation plates (`forcePunctuation: true`) act as intentional visual breaks, inserting high-contrast plates at rhythm intervals.
+4. **Decoupled Hero Selection:**
+   * Homepage hero selection is decoupled from gallery sequence ordering (hero chosen via aspect ratio, resolution, and aesthetic prominence score; gallery ordered via sequence continuity).
+5. **Sequence Stability & Snapshot Invalidation:**
+   * Prevents full-archive reshuffling upon publishing new photographs using movement-bounded sequence insertion.
+   * Sequence snapshots are cached in Next.js ISR and recomputed on-demand via Sanity webhooks.
+
+---
+
+### Checkpoint B: Zero-Friction Photography Archive Foundation (Completed)
+
+#### Schema Transformation (`photograph.ts`)
+* **Made Mandatory Editorial Fields Optional:**
+  * `title`: Optional (`validation: (Rule) => Rule.optional()`). Falls back to `Plate ${plateNumber}` or `"Untitled Plate"`.
+  * `slug`: Optional. Auto-derived from title, plate number, or document ID.
+  * `image.alt`: Optional. Falls back to caption, title, or curatorial description.
+  * `category`: Optional. Photographs without category remain fully visible in the visual journal under `"ALL"`.
+  * `displayOrder`: Optional. Replaced by automated intelligent sequencing.
+* **Added `visualMetadata` (Read-Only Object):**
+  * Contains automated pipeline metrics: `status` (`pending` | `analyzed` | `failed`), `version`, `sourceAssetRef`, `analyzedAt`, `dominantColor` (Hex, RGB, HSL, LAB), `palette[]` (Hex, RGB, HSL, LAB, population, role), `brightness`, `contrast`, `saturation`, `colorTemperature`, `colorFamily`, `orientation`, `aspectRatioNumeric`, and `error`.
+  * Marked `readOnly: true` and collapsed by default in Studio.
+* **Added `curationControls` (Editable Overrides Object):**
+  * Contains manual curator overrides: `pinnedPosition` (integer $\ge 1$), `forcePunctuation` (boolean), `manualColorFamily` (enum override).
+* **Enhanced Studio Preview:**
+  * Preview `prepare()` safely renders untitled plates and displays palette classifications alongside genre labels.
+
+#### Data Layer & Projections
+* **`src/sanity/lib/types.ts`:** Defined `ColorFamily`, `ImageOrientation`, `ColorSwatch`, `PhotographVisualMetadata`, `CurationControls`, and updated `SanityPhotographDoc`.
+* **`src/lib/data.ts`:** Updated public `Photograph` interface with optional `category`, optional `displayOrder`, `isHero`, `visualMetadata`, and `curationControls`.
+* **`src/sanity/lib/queries.ts`:** Expanded `PHOTOGRAPH_FIELDS` GROQ projection to query full `visualMetadata` and `curationControls` structures.
+* **`src/sanity/lib/mappers.ts`:** Hardened `mapSanityPhotograph` with defensive fallbacks for title, slug, and alt text.
+
+#### Frontend Component Hardening
+* **`PhotoDetailModal.tsx`:** Curatorial notes and captions render only when non-empty strings exist; category row falls back to `photo.visualMetadata?.colorFamily` or `"Visual Archive"`; placeholder disclaimer note guarded.
+* **`app/gallery/[slug]/page.tsx`:** Category row switches dynamically to `Palette: <colorFamily>` if genre is undefined; added dominant tone color swatch; curatorial notes and captions guarded.
+* **`FeaturedGallery.tsx`:** Guarded filter predicate `p.category?.toUpperCase() === selectedCategory`; plate metadata bars display genre or palette; sample notes guarded.
+* **`GalleryClient.tsx`:** Category filter safely displays uncategorized plates under `"ALL"`; plate metadata labels adapt dynamically.
+* **`Hero.tsx`:** Telemetry bar gracefully handles undefined categories.
+* **`app/collections/[slug]/page.tsx`:** Guarded metadata bars against undefined categories.
+
+---
+
+## 6. The Agreed Zero-Friction CMS Workflow
+
+The overarching operational workflow for Harikrishnan's archive:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Bulk Upload N Photographs                                │
+│    Photographer drags & drops arbitrary Lightroom exports    │
+│    into Sanity Studio in a single action.                   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 2. Automated Document Creation                              │
+│    System generates individual `photograph` documents,       │
+│    assigns unique slugs, and assigns plate numbers.         │
+│    Title, description, category remain blank/optional.      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 3. Automated Visual Analysis                                │
+│    Pipeline processes image buffer:                          │
+│    - Extracts dominant color & palette (Hex, RGB, HSL, LAB)  │
+│    - Calculates perceptual brightness, contrast, saturation │
+│    - Classifies color family & geometric orientation        │
+│    - Updates `visualMetadata` with status: "analyzed"       │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 4. Intelligent Visual Sequencing                            │
+│    Sequencing algorithm orders plates using normalized       │
+│    perceptual cost formula and respects `curationControls`. │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 5. Automated Publication & Revalidation                     │
+│    Documents are published; Sanity webhook triggers Next.js │
+│    on-demand ISR tag revalidation ("photographs").          │
+│    Photographs appear in live gallery immediately.          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key Principle:** The photographer can write titles, captions, or curate specific pinned positions whenever desired, but **the system never demands manual data entry to publish photographs beautifully**.
+
+---
+
+## 7. Current Project Structure
 
 ```
 photography-portfolio/
@@ -73,250 +202,179 @@ photography-portfolio/
 ├── next.config.ts                 # Next.js config (AVIF/WebP, cdn.sanity.io remote pattern)
 ├── sanity.config.ts               # Embedded Sanity Studio configuration at /studio
 ├── tsconfig.json                  # Strict TypeScript configuration
-├── PROJECT_CONTEXT.md             # Master context handoff document
-├── .env.example                   # Clean template of public & server-only env variables
+├── PROJECT_CONTEXT.md             # Master project context and handoff document
+├── .env.example                   # Environment variable template
 │
 └── src/
     ├── app/
-    │   ├── layout.tsx             # Global shell: font preconnect, metadata, film grain, DraftPreviewBanner
-    │   ├── globals.css            # Tailwind 4 @theme, custom palette, grain overlay utilities
-    │   ├── page.tsx               # Server Component for homepage (fetches published CMS data)
+    │   ├── layout.tsx             # Root layout: font preconnect, MotionProvider, film grain
+    │   ├── globals.css            # Tailwind 4 @theme, custom palette, grain utilities
+    │   ├── page.tsx               # Homepage Server Component
     │   │
     │   ├── api/
     │   │   ├── draft-mode/
-    │   │   │   ├── enable/
-    │   │   │   │   └── route.ts   # Authenticated Draft Mode activation (open-redirect protected)
-    │   │   │   └── disable/
-    │   │   │       └── route.ts   # Clears prerender bypass cookie and returns to published site
+    │   │   │   ├── enable/route.ts   # Secure Draft Mode activation
+    │   │   │   └── disable/route.ts  # Clears bypass cookie
     │   │   └── revalidate/
-    │   │       └── route.ts       # HMAC-SHA256 verified Sanity publishing webhook (On-Demand ISR)
+    │   │       └── route.ts          # HMAC-SHA256 verified Sanity webhook (ISR)
     │   │
     │   ├── gallery/
-    │   │   ├── layout.tsx         # Metadata shell for the primary photography gallery
-    │   │   ├── page.tsx           # Server Component querying live published photographs & collections
-    │   │   ├── GalleryClient.tsx  # Interactive client gallery: dual filtering, modal states, animations
-    │   │   │
+    │   │   ├── layout.tsx         # Gallery metadata shell
+    │   │   ├── page.tsx           # Gallery Server Component
+    │   │   ├── GalleryClient.tsx  # Interactive gallery (dual filtering, modal states)
     │   │   └── [slug]/
-    │   │       ├── page.tsx       # Dynamic photograph dossier (dynamicParams = true, on-demand resolution)
-    │   │       └── not-found.tsx  # Styled fine-art 404 plate for unpublished / missing slugs
+    │   │       ├── page.tsx       # Dynamic plate dossier (dynamicParams = true)
+    │   │       └── not-found.tsx  # Fine-art 404 plate
     │   │
     │   ├── collections/
-    │   │   ├── layout.tsx         # Metadata shell for travel journeys
-    │   │   ├── page.tsx           # Travel collections index page (dynamic plate counts)
-    │   │   │
+    │   │   ├── layout.tsx         # Collections metadata shell
+    │   │   ├── page.tsx           # Collections index
     │   │   └── [slug]/
-    │   │       ├── page.tsx       # Dynamic journey dossier with curated plate sequence
-    │   │       └── not-found.tsx  # Styled fine-art 404 plate for missing collection URLs
+    │   │       ├── page.tsx       # Journey dossier
+    │   │       └── not-found.tsx  # Fine-art 404 plate
     │   │
     │   └── studio/
     │       └── [[...tool]]/
     │           ├── page.tsx       # Studio mount page
-    │           └── Studio.tsx     # NextStudio client wrapper (elevated z-[60], zoom preserved)
+    │           └── Studio.tsx     # NextStudio client wrapper
     │
     ├── components/
-    │   ├── Navigation.tsx         # Route-aware sticky header, active states, mobile drawer
-    │   ├── Hero.tsx               # Curatorial hero presentation, dynamic image, camera slate
-    │   ├── EditorialIntro.tsx     # Personal premise, 4-point exhibition metrics grid
-    │   ├── FeaturedGallery.tsx    # Homepage featured plates grid with full gallery CTA
-    │   ├── SeriesShowcase.tsx     # Curated travel journeys linking to /collections/[slug]
-    │   ├── AboutSection.tsx       # Personal bio, Canon EOS R6 Mark III, Sanity portrait image
-    │   ├── Footer.tsx             # "Let's Connect" section, HARI watermark, © 2026 Hari colophon
-    │   ├── PhotoDetailModal.tsx   # Fullscreen plate inspector with deep-link action
-    │   ├── CopyLinkButton.tsx     # Tactile clipboard copy button with visual confirmation state
-    │   ├── DraftPreviewBanner.tsx # Minimal status banner displayed ONLY in active Draft Mode sessions
-    │   └── HomePageClient.tsx     # Interactive client container for homepage modals
+    │   ├── Navigation.tsx         # Route-aware header with motion blur & mobile drawer
+    │   ├── Hero.tsx               # Hero presentation with scale settle & staggered typography
+    │   ├── EditorialIntro.tsx     # Narrative intro with vertical line draw & staggered reveals
+    │   ├── FeaturedGallery.tsx    # Homepage featured plates with ImageVeil & spring filter pills
+    │   ├── SeriesShowcase.tsx     # Curated travel journeys
+    │   ├── AboutSection.tsx       # Personal bio, Canon EOS R6 Mark III, portrait reveal
+    │   ├── Footer.tsx             # "Let's Connect", monumental HARI watermark, © 2026 Hari
+    │   ├── PhotoDetailModal.tsx   # Plate inspector modal with defensive fallbacks
+    │   ├── CopyLinkButton.tsx     # Clipboard copy button with tactile visual state
+    │   ├── DraftPreviewBanner.tsx # Status banner for active Draft Mode sessions
+    │   ├── HomePageClient.tsx     # Client container for homepage modals
+    │   └── motion/                # Stage A reusable motion primitives
+    │       ├── index.ts           # Barrel export
+    │       ├── MotionProvider.tsx # Client motion context with reduced-motion support
+    │       ├── ScrollReveal.tsx   # Viewport scroll trigger primitive
+    │       ├── TextReveal.tsx     # Accessible editorial typography reveal
+    │       └── ImageVeil.tsx      # Curatorial image shutter entrance
     │
-    ├── sanity/
-    │   ├── env.ts                 # Sanity env accessors (public identifiers & server-only secrets)
-    │   ├── structure.ts           # Desk structure locking siteSettings singleton
-    │   ├── schemaTypes/
-    │   │   ├── photograph.ts      # Photograph schema (hotspots, optional EXIF, categories, collections)
-    │   │   ├── collection.ts      # Travel journey schema (covers, dates, journey numbers)
-    │   │   ├── siteSettings.ts    # Singleton schema for photographer bio, camera, and contact
-    │   │   └── index.ts           # Schema registration index
-    │   └── lib/
-    │       ├── client.ts          # createClient, sanityFetch with draftMode and Next.js cache tags
-    │       ├── image.ts           # urlForImage builder, resolveImageUrl with crop/hotspot extraction
-    │       ├── queries.ts         # Pure GROQ queries (public queries enforce !(_id in path("drafts.**")))
-    │       ├── types.ts           # TypeScript interfaces matching raw Sanity documents
-    │       └── mappers.ts         # Pure deterministic mappers from Sanity documents to app models
+    ├── lib/
+    │   ├── data.ts                # Application data model, Photograph types, fetchers
+    │   └── motion.ts              # Motion design tokens (easings, durations, springs)
     │
-    └── lib/
-        └── data.ts                # CMS-independent data layer, mock fallback guardrail, and fetchers
+    └── sanity/
+        ├── env.ts                 # Sanity env accessors
+        ├── structure.ts           # Desk structure locking siteSettings singleton
+        ├── schemaTypes/
+        │   ├── photograph.ts      # Zero-friction Photograph schema (visualMetadata, curationControls)
+        │   ├── collection.ts      # Travel journey schema
+        │   ├── siteSettings.ts    # Singleton schema for photographer bio, camera, contact
+        │   └── index.ts           # Schema registration index
+        └── lib/
+            ├── client.ts          # createClient, sanityFetch with draftMode and cache tags
+            ├── image.ts           # urlForImage builder, resolveImageUrl with crop/hotspot
+            ├── queries.ts         # Pure GROQ queries (PHOTOGRAPH_FIELDS with visualMetadata)
+            ├── types.ts           # TypeScript interfaces (SanityPhotographDoc, VisualMetadata)
+            └── mappers.ts         # Deterministic mappers with defensive fallbacks
 ```
 
 ---
 
-## 5. Sanity Schemas & GROQ Data Flow
+## 8. Current Sanity Schema Definitions & Data Flow
 
 ```mermaid
 flowchart TD
-    subgraph Sanity Studio & Content Lake
-        DocPhoto["Photograph Document<br/>(_type: 'photograph')"]
-        DocCol["Collection Document<br/>(_type: 'collection')"]
-        DocSite["Site Settings Singleton<br/>(_type: 'siteSettings')"]
-        DraftDoc["Unpublished Draft<br/>(_id: 'drafts.*')"]
+    subgraph CMS Content Lake
+        PhotoDoc["Photograph Document<br/>• image (mandatory)<br/>• title, slug, alt (optional)<br/>• visualMetadata (read-only)<br/>• curationControls (optional)"]
+        ColDoc["Collection Document<br/>• title, slug, coverImage"]
+        SiteDoc["Site Settings Singleton<br/>• photographerName: Harikrishnan Nandanan<br/>• camera: Canon EOS R6 Mark III"]
     end
 
-    subgraph Data Access Layer
-        PublicQueries["Public GROQ Queries<br/>!(_id in path('drafts.**'))"]
-        DraftQueries["Draft GROQ Queries<br/>(perspective: 'previewDrafts')"]
-        Mappers["Deterministic Mappers<br/>(mapSanityPhotograph, mapSanityCollection)"]
+    subgraph Data Layer
+        GROQ["PHOTOGRAPH_FIELDS Projection<br/>(Queries visualMetadata + curationControls)"]
+        Mapper["mapSanityPhotograph<br/>(Applies fallback titles, slugs, and alt text)"]
     end
 
-    subgraph Next.js 16 Caching & Pages
-        Cache["Next.js Data Cache<br/>(tags: 'photographs', 'collections')"]
-        Pages["Server Components<br/>(/, /gallery, [slug])"]
-        PreviewBanner["DraftPreviewBanner<br/>(Mounted when draftMode is active)"]
+    subgraph Presentation Layer
+        Modal["PhotoDetailModal<br/>(Guards notes/caption, displays color family)"]
+        Gallery["GalleryClient & FeaturedGallery<br/>(Safely handles uncategorized plates)"]
+        Dossier["Detail Dossier (/gallery/[slug])<br/>(Displays dominant tone chip & palette)"]
+        HeroComp["Hero Component<br/>(Displays verified camera & palette)"]
     end
 
-    DocPhoto --> PublicQueries
-    DocCol --> PublicQueries
-    DocSite --> PublicQueries
-    DraftDoc -.->|SANITY_API_READ_TOKEN only| DraftQueries
-
-    PublicQueries --> Mappers --> Cache --> Pages
-    DraftQueries -->|cache: 'no-store'| Mappers --> Pages
-    Pages --> PreviewBanner
+    PhotoDoc --> GROQ --> Mapper
+    ColDoc --> GROQ --> Mapper
+    SiteDoc --> GROQ --> Mapper
+    Mapper --> Modal
+    Mapper --> Gallery
+    Mapper --> Dossier
+    Mapper --> HeroComp
 ```
 
-### Schema Design Principles
-1. **Photograph (`photograph`)**:
-   - `title`, `slug`, `image` (hotspot enabled), `category` (5 genres), `displayOrder`.
-   - `captureDate`: dedicated date picker (not mixed with descriptive text).
-   - `cameraExif`: strictly optional object (`cameraModel`, `lens`, `focalLength`, `aperture`, `shutterSpeed`, `iso`). Displayed in UI only when authentic values are present.
-   - `collection`: weak reference to `collection` schema.
-2. **Collection (`collection`)**:
-   - `title`, `slug`, `journeyNumber`, `subtitle`, `description`, `coverImage`, `yearRange`.
-   - Dynamic plate count: derived dynamically via GROQ `count(*[_type == "photograph" && !(_id in path("drafts.**")) && references(^._id)])` to prevent data duplication.
-3. **Site Settings (`siteSettings`)**:
-   - Singleton locked in desk structure (`src/sanity/structure.ts`).
-   - `photographerName`: "Harikrishnan Nandanan"
-   - `camera.model`: "Canon EOS R6 Mark III"
-   - `portrait`: optional high-resolution portrait with hotspot/crop.
-   - Decoupled contact placeholders.
+---
+
+## 9. Verification Status & Known Limitations
+
+### Verification Status
+* **TypeScript Compiler (`npx tsc --noEmit`):** Passes with **0 errors**.
+* **Production Build (`npm run build`):** Compiles cleanly with exit code `0`. All 11 static pages generated:
+  * `/` (Static)
+  * `/_not-found`
+  * `/api/draft-mode/disable`
+  * `/api/draft-mode/enable`
+  * `/api/revalidate`
+  * `/collections` (Static)
+  * `/collections/[slug]` (SSG)
+  * `/gallery` (Static)
+  * `/gallery/[slug]` (SSG)
+  * `/studio/[[...tool]]` (Dynamic)
+
+### Known Limitations & Pending Work
+1. **Sharp Not Yet Installed:** Image processing library `sharp` is intentionally not installed yet; it will be introduced in the analysis pipeline.
+2. **Analysis Pipeline Pending:** Documents currently have `visualMetadata.status: "pending"` by default until the automated analysis pipeline (worker/webhook) is implemented.
+3. **Sequencing Hook Pending:** The gallery currently displays items ordered by legacy `displayOrder asc, _createdAt desc` until the visual sequencing algorithm is integrated with the presentation layer.
+4. **Live Dataset Population:** The Sanity dataset currently contains plate `test 1` and `siteSettings`. Mock data serves as a fallback reference when Sanity returns empty arrays or when `NEXT_PUBLIC_USE_MOCK_DATA="true"`.
 
 ---
 
-## 6. Secure Draft Previews & Publishing Webhooks
+## 10. Next Milestone: Phase 4.5 Checkpoint C
 
-### 6.1 Draft Preview Workflow
-1. **Activation via Sanity Studio**: The Presentation Tool passes an ephemeral, single-use signed token to `/api/draft-mode/enable`.
-2. **Security & Validation**:
-   - Evaluates token via `@sanity/preview-url-secret` with `SANITY_API_READ_TOKEN`.
-   - In production, reusable static-secret URLs (`?secret=...`) are strictly disabled to prevent secret leakage in browser history and server logs.
-   - Destination path is checked against `ALLOWED_PATH_REGEX` to prevent open-redirect vulnerabilities.
-   - Sets secure bypass cookie `__prerender_bypass` via `(await draftMode()).enable()`.
-3. **Live Rendering**:
-   - `src/sanity/lib/client.ts` uses `perspective: "previewDrafts"` and bypasses the Next.js cache (`cache: "no-store"`, `next: { revalidate: 0 }`).
-   - The UI mounts `<DraftPreviewBanner />` at the top with a one-click **"Exit Preview"** link.
-   - Search metadata injects `robots: { index: false, follow: false }`.
-4. **Exiting Preview**:
-   - Clicking "Exit Preview" navigates to `/api/draft-mode/disable`.
-   - Deletes the bypass cookie and returns the visitor to the public, published site.
-
-### 6.2 Webhook Revalidation Strategy (On-Demand ISR)
-- **Endpoint**: `/api/revalidate` (HTTP POST).
-- **Signature Verification**: Verified using `parseBody` from `next-sanity/webhook` using HMAC-SHA256 signature header (`sanity-webhook-signature`) and server secret `SANITY_REVALIDATE_SECRET`.
-- **Event Filter**: Ignores draft mutation events (`_id.startsWith("drafts.")`), preventing draft saves from purging public caches.
-- **Old & New Slug Handling**: On publication, update, rename, or deletion, invalidates both `slug` and `previousSlug`, and both `collectionSlug` and `previousCollectionSlug`.
-- **Next.js 16 APIs**: Invokes `revalidateTag(tag, "max")` and `revalidatePath(path, "page")`.
+### Scope: Sanity Studio Bulk Uploader & Intake Pipeline
+The next checkpoint will implement the bulk intake mechanism:
+1. **Multi-File Upload Component / Action:** Custom tool or Studio input component allowing the photographer to select $N$ files simultaneously from disk.
+2. **Deterministic Document Generation:** Creates individual `photograph` documents with:
+   - Asset upload to Sanity CDN.
+   - Deterministic slug (from sanitized filename or timestamp).
+   - Plate numbering assignment.
+   - Initial `visualMetadata.status: "pending"`.
+   - Immediate publish or draft creation according to configuration.
+3. **Decoupled Architecture:** Upload finishes instantaneously; analysis runs asynchronously without blocking the user.
+4. **Idempotency & Error Handling:** Prevents duplicate uploads of the same asset; isolates failures to single plates without failing the entire batch.
 
 ---
 
-## 7. Environment Variables Reference
+## 11. Core Invariants & Preservation Rules
 
-All required environment variables are templated in [`.env.example`](file:///h:/Docs/photography%20portfolio/.env.example):
+Any agent or developer continuing this project **MUST** uphold these rules:
 
-| Variable Name | Scope | Purpose | Example / Required Format |
-| :--- | :--- | :--- | :--- |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Public (Client + Server) | Sanity Project Identifier | `pi13i3as` |
-| `NEXT_PUBLIC_SANITY_DATASET` | Public (Client + Server) | Sanity Dataset Name | `production` |
-| `NEXT_PUBLIC_SANITY_API_VERSION` | Public (Client + Server) | Sanity API Version String | `2026-03-01` |
-| `NEXT_PUBLIC_USE_MOCK_DATA` | Public (Client + Server) | Development mock toggle | `false` (keep false in prod) |
-| `SANITY_API_READ_TOKEN` | **Server-Only (Secret)** | Reads private drafts in Draft Mode | Sanity Viewer token |
-| `SANITY_REVALIDATE_SECRET` | **Server-Only (Secret)** | HMAC signature check in `/api/revalidate` | 32+ character random string |
-| `SANITY_PREVIEW_SECRET` | **Server-Only (Secret)** | Dev-only fallback preview secret | Custom random string |
-
-> [!CAUTION]
-> Never prefix `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET`, or `SANITY_PREVIEW_SECRET` with `NEXT_PUBLIC_`. Keep them strictly server-only.
-
----
-
-## 8. Production Deployment Guide (Vercel)
-
-### Pre-Deployment Checklist
-1. **Sanity CORS Origins**:
-   - Go to [manage.sanity.io](https://manage.sanity.io/) > Project `pi13i3as` > **API** > **CORS Origins**.
-   - Add your production domain: `https://<your-portfolio>.vercel.app` (Enable **Allow credentials: YES**).
-   - Ensure `http://localhost:3000` is also present for local studio authoring.
-2. **Generate Sanity Read Token**:
-   - In Sanity Manage > **API** > **Tokens** > **Add API Token**.
-   - Name: `Portfolio Draft Reader`. Role: **Viewer** (read-only).
-   - Add as `SANITY_API_READ_TOKEN` in Vercel Environment Variables.
-3. **Configure Webhook in Sanity Manage**:
-   - In Sanity Manage > **API** > **Webhooks** > **Create Webhook**.
-   - **URL**: `https://<your-portfolio>.vercel.app/api/revalidate`
-   - **Dataset**: `production`
-   - **Trigger on**: `Create`, `Update`, `Delete`
-   - **Filter**: `_type in ["photograph", "collection", "siteSettings"]`
-   - **Secret**: *(Paste your strong `SANITY_REVALIDATE_SECRET`)*
-   - **Projection**:
-     ```groq
-     {
-       "operation": delta::operation(),
-       "_id": coalesce(_id, before()._id),
-       "_type": coalesce(_type, before()._type),
-       "slug": coalesce(slug.current, before().slug.current),
-       "previousSlug": before().slug.current,
-       "collectionSlug": coalesce(collection->slug.current, before().collection->slug.current),
-       "previousCollectionSlug": before().collection->slug.current,
-       "featured": coalesce(featured, before().featured),
-       "isHero": coalesce(isHero, before().isHero)
-     }
-     ```
-
-### Post-Deployment Verification
-- [ ] Open `/studio` and sign in to Sanity Studio.
-- [ ] Publish a new photograph in Studio and verify its page resolves at `/gallery/[slug]` without rebuilding.
-- [ ] Verify Sanity webhook delivery history in [manage.sanity.io](https://manage.sanity.io/) returns HTTP 200.
-- [ ] Edit a photograph without publishing; verify it appears in Draft Mode preview but returns 404 in private/incognito browsing.
-
----
-
-## 9. Known Limitations & Untested Integrations
-
-1. **Live Cloud Webhook Delivery**: Verified via cryptographic HMAC-SHA256 test payloads identical to Sanity's webhook dispatcher. Real end-to-end delivery from `sanity.io` servers requires the publicly reachable HTTPS domain created upon Vercel deployment.
-2. **Private Draft Fetching Without Token**: If `SANITY_API_READ_TOKEN` is omitted from environment variables, Draft Mode safely falls back to published content because unauthenticated queries to Sanity Content Lake cannot read private drafts.
-3. **Single Document in Dataset**: The live dataset currently holds plate `test 1` and `siteSettings`. Sample placeholders in `RAW_PHOTOGRAPHS` remain in code as an opt-in development reference (`NEXT_PUBLIC_USE_MOCK_DATA="true"`), but are never served in production.
-
----
-
-## 10. Phase 5 Animation Prerequisites
-
-When proceeding to **Phase 5: Animations and Micro-interactions**:
-- **Package Selection**: Install `framer-motion` (or GSAP) with React 19 compatibility.
-- **Layout Stability**: Ensure kinetic transitions and image reveals do not shift aspect ratios or break Next.js `<Image>` blur placeholder transitions.
-- **Accessibility**: Wrap all kinetic springs and reveal animations in `prefers-reduced-motion` fallbacks.
-- **Performance Budget**: Keep total client-side JavaScript minimal; preserve Server Component boundaries on `/`, `/gallery`, and `/collections`.
-- **Three.js**: Strictly reserved for **Phase 6** (WebGL Canvas & Ambient Atmosphere). Do not introduce 3D meshes or Three.js in Phase 5.
-
----
-
-## 11. Command Reference
-
-```powershell
-# Start local development server (serves at http://localhost:3000)
-npm run dev
-
-# Run strict TypeScript type verification (currently 0 errors)
-npx tsc --noEmit
-
-# Run optimized production build (currently compiles in ~5s with 0 errors)
-npm run build
-
-# Run automated Stage C & D security & revalidation test suite
-node scratch/test-stage-c-e2e.mjs
-node scratch/test-lifecycle-revalidation.mjs
-node scratch/test-stage-d-regression.mjs
-```
+1. **Preserve Authentic Identity:**
+   * Photographer: **Harikrishnan Nandanan**
+   * Camera: **Canon EOS R6 Mark III**
+   * Watermark: **`HARI`**
+   * Copyright: **`© 2026 Hari. All rights reserved.`**
+   * Never invent commercial studio services, client booking forms, fake awards, or fictional photographic narratives.
+2. **Preserve Design System ("The Curated Monolith"):**
+   * Dark editorial aesthetic (`#08080a`, `#f4f2ec`, `#d4a373`).
+   * Typography: Cormorant Garamond (Serif), Inter (Sans), JetBrains Mono (Telemetry Monospace).
+   * Analog film grain and vignette overlays.
+3. **Preserve Phase 5 Motion & Architecture:**
+   * Keep `ScrollReveal`, `TextReveal`, `ImageVeil`, and `motion/react` integration intact.
+   * Root layout must remain a **Server Component**.
+   * Respect `prefers-reduced-motion` at all times.
+   * Avoid full-page hydration flashes or content hidden from non-JS visitors.
+4. **Preserve Sanity Integration:**
+   * Maintain the embedded Sanity Studio at `/studio`.
+   * Keep authenticated Draft Mode and HMAC-SHA256 ISR revalidation functional.
+   * Public GROQ queries must enforce `!(_id in path("drafts.**"))`.
+5. **Preserve Zero-Friction Principles:**
+   * Never re-introduce mandatory editorial fields on photographs.
+   * Keep `visualMetadata` separated from manual `curationControls`.
